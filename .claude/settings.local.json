@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/aubre/OneDrive/Documents/**)",
+      "Bash(start \"\" \"http://localhost:5173/\")",
+      "Bash(find '/c/Users/aubre/OneDrive/Documents/WORLDS STRONGEST' -type f \\\\\\(-name *.fbx -o -name *.glb -o -name *.gltf \\\\\\))",
+      "Bash(xargs grep:*)",
+      "Bash(find '/c/Users/aubre/OneDrive/Documents/WORLDS STRONGEST/public' -name *idle*.glb -o -name *idle*.gltf)",
+      "Bash(npx tsc:*)",
+      "Bash(find 'c:\\\\Users\\\\aubre\\\\OneDrive\\\\Documents\\\\WORLDS STRONGEST' -type f -name *.ts -o -name *.js -o -name *.tsx -o -name *.jsx)",
+      "Bash(xargs ls:*)",
+      "Bash(xargs wc:*)",
+      "Bash(grep -r \"MIXAMO_PREFIXES\\\\|_collectRetargetClipNames\\\\|_unlockThen\" 'c:\\\\Users\\\\aubre\\\\OneDrive\\\\Documents\\\\WORLDS STRONGEST\\\\src' --include=*.ts --include=*.js)",
+      "Bash(find 'c:/Users/aubre/OneDrive/Documents/WORLDS STRONGEST/src' -type f -name *.js)",
+      "Bash(npx vitest:*)",
+      "Bash(find 'C:/Users/aubre/OneDrive/Documents/WORLDS STRONGEST' -type f \\\\\\(-path */src/ai/* -o -path */src/combat/* -o -path */src/character/* -o -path */src/network/* -o -path */src/ui/* -o -path */src/world/* -o -path */src/progression/* -o -path */src/save/* -o -path */src/missions/* -o -path */src/data/* -o -path */src/config/* \\\\\\))"
+    ]
+  }
+}

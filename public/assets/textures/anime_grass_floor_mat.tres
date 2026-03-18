@@ -1,0 +1,28 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://cd88eo2frpr7d"]
+
+[ext_resource type="Shader" uid="uid://xo8gh2dcy7jy" path="res://scripts/turn-based-rpg-engine/scripts/visual/cel_shader.gdshader" id="1_cel"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_1"]
+noise_type = 3
+frequency = 0.05
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1"]
+seamless = true
+noise = SubResource("FastNoiseLite_1")
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_cel")
+shader_parameter/base_color = Color(0.35, 0.75, 0.35, 1)
+shader_parameter/main_texture = SubResource("NoiseTexture2D_1")
+shader_parameter/color_split = 0.5
+shader_parameter/shadow_softness = 0.1
+shader_parameter/shadow_color = Color(0.1, 0.3, 0.2, 1)
+shader_parameter/mid_color = Color(0.2, 0.5, 0.3, 1)
+shader_parameter/color_split_mid = 0.7
+shader_parameter/rim_threshold = 0.9
+shader_parameter/rim_softness = 0.05
+shader_parameter/specular_threshold = 1.0
+shader_parameter/specular_softness = 0.01
+shader_parameter/use_halftone = true
+shader_parameter/halftone_size = 120.0

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WORLD'S STRONGEST — Fighting Game Demo</title>
+
+  <!-- Import map for browser-native ES module resolution from jsDelivr. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "@babylonjs/core": "https://cdn.jsdelivr.net/npm/@babylonjs/core@6.38.0/index.js",
+      "@babylonjs/core/": "https://cdn.jsdelivr.net/npm/@babylonjs/core@6.38.0/",
+      "@babylonjs/loaders": "https://cdn.jsdelivr.net/npm/@babylonjs/loaders@6.38.0/index.js",
+      "@babylonjs/loaders/": "https://cdn.jsdelivr.net/npm/@babylonjs/loaders@6.38.0/",
+      "@babylonjs/gui": "https://cdn.jsdelivr.net/npm/@babylonjs/gui@6.38.0/index.js",
+      "@babylonjs/gui/": "https://cdn.jsdelivr.net/npm/@babylonjs/gui@6.38.0/",
+      "@babylonjs/havok": "https://cdn.jsdelivr.net/npm/@babylonjs/havok@1.3.0/lib/esm/HavokPhysics_es.js",
+      "@babylonjs/havok/": "https://cdn.jsdelivr.net/npm/@babylonjs/havok@1.3.0/lib/esm/"
+    }
+  }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       GLOBAL RESET & BASE
+       ═══════════════════════════════════════════════════════════════ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Primary Colors */
+      --color-bg: #050508;
+      --color-bg-elevated: #0a0a10;
+      --color-bg-card: rgba(10, 12, 22, 0.92);
+      
+      /* Accent Colors */
+      --color-primary: #00d4ff;
+      --color-secondary: #8b5cf6;
+      --color-energy: #ff6b35;
+      --color-success: #22c55e;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-gold: #ffd700;
+      
+      /* Text Colors */
+      --color-text: #f1f5f9;
+      --color-text-muted: #94a3b8;
+      --color-text-dim: #64748b;
+      
+      /* Border & Shadow */
+      --border-subtle: rgba(148, 163, 184, 0.12);
+      --border-accent: rgba(0, 212, 255, 0.25);
+      --shadow-glow: 0 0 30px rgba(0, 212, 255, 0.15);
+      --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+      
+      /* Animation */
+      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: 'Rajdhani', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       CANVAS
+       ═══════════════════════════════════════════════════════════════ */
+    #renderCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LOADING SCREEN
+       ═══════════════════════════════════════════════════════════════ */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(ellipse at 30% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+        var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .loading-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #fff 0%, var(--color-primary) 50%, var(--color-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: logoPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes logoPulse {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.3)); }
+      50% { filter: drop-shadow(0 0 40px rgba(0, 212, 255, 0.6)); }
+    }
+
+    .loading-spinner-container {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+
+    .loading-spinner {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 3px solid transparent;
+      border-top-color: var(--color-primary);
+      border-right-color: var(--color-secondary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-spinner-inner {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      border: 2px solid transparent;
+      border-bottom-color: var(--color-energy);
+      border-left-color: var(--color-energy);
+      border-radius: 50%;
+      animation: spinReverse 1.5s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes spinReverse {
+      to { transform: rotate(-360deg); }
+    }
+
+    .loading-text {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      animation: textPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes textPulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .loading-progress {
+      width: 240px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .loading-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px var(--color-primary);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       PARTICLE OVERLAY (Ambient Effect)
+       ═══════════════════════════════════════════════════════════════ */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: float 8s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.4; }
+      90% { opacity: 0.4; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       UTILITY CLASSES
+       ═══════════════════════════════════════════════════════════════ */
+    .glass-panel {
+      background: rgba(10, 12, 22, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+
+    .glow-border {
+      position: relative;
+    }
+
+    .glow-border::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SCROLLBAR
+       ═══════════════════════════════════════════════════════════════ */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="renderCanvas"></canvas>
+  
+  <!-- Ambient Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Loading Screen -->
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-content">
+      <div class="loading-logo">WORLD'S STRONGEST</div>
+      <div class="loading-spinner-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-spinner-inner"></div>
+      </div>
+      <div class="loading-text">Initializing Combat Systems</div>
+      <div class="loading-progress">
+        <div class="loading-progress-bar" id="loadingProgressBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Create ambient particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 8 + 's';
+      particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+      particlesContainer.appendChild(particle);
+    }
+
+    // Loading progress simulation
+    const loadingBar = document.getElementById('loadingProgressBar');
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(progressInterval);
+      }
+      loadingBar.style.width = progress + '%';
+    }, 200);
+  </script>
+
+  <script type="module" src="./src/core/main.js?v=4"></script>
+</body>
+</html>

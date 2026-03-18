@@ -1,0 +1,33 @@
+{
+  "name": "worlds-strongest",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "onefight": "node scripts/onefight-runner.cjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src vite.config.ts eslint.config.js --ext .js,.ts",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm run lint && npm run test"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^8.26.0",
+    "@babylonjs/gui": "^8.26.0",
+    "@babylonjs/loaders": "^8.26.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.1",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
+    "electron": "^37.2.6",
+    "eslint": "^9.38.0",
+    "globals": "^16.4.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12",
+    "vitest": "^4.1.0"
+  }
+}

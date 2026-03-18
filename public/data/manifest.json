@@ -1,0 +1,453 @@
+{
+  "models": [
+    {
+      "id": "char_goku",
+      "path": "/assets/models/ayo.glb",
+      "priority": 1
+    },
+    {
+      "id": "char_vegeta",
+      "path": "/assets/models/RAYNEFBX.glb",
+      "priority": 1
+    },
+    {
+      "id": "char_gohan",
+      "path": "/assets/models/ayo.glb",
+      "priority": 1
+    },
+    {
+      "id": "char_piccolo",
+      "path": "/assets/models/RAYNEFBX.glb",
+      "priority": 1
+    },
+    {
+      "id": "char_ayo",
+      "path": "/assets/models/ayo.glb",
+      "priority": 1
+    },
+    {
+      "id": "char_hana",
+      "path": "/assets/models/hana.glb",
+      "priority": 1
+    },
+    {
+      "id": "char_rayne",
+      "path": "/assets/models/RAYNEFBX.glb",
+      "priority": 1
+    },
+    {
+      "id": "enemy_akademiks",
+      "path": "/assets/models/enemies/Akademiks.glb",
+      "priority": 2
+    },
+    {
+      "id": "enemy_granny",
+      "path": "/assets/models/enemies/Granny.glb",
+      "priority": 2
+    },
+    {
+      "id": "enemy_jellyroll",
+      "path": "/assets/models/enemies/Jelly roll.glb",
+      "priority": 2
+    },
+    {
+      "id": "enemy_opp",
+      "path": "/assets/models/enemies/opp.glb",
+      "priority": 2
+    },
+    {
+      "id": "enemy_lebron",
+      "path": "/assets/models/enemies/Lebron.glb",
+      "priority": 2
+    },
+    {
+      "id": "weapon_ayoskatana",
+      "path": "/assets/sword 3d models/ayoskatana.glb",
+      "priority": 2
+    },
+    {
+      "id": "weapon_katana",
+      "path": "/assets/sword 3d models/katana.glb",
+      "priority": 2
+    },
+    {
+      "id": "weapon_neon_blade",
+      "path": "/assets/sword 3d models/neo-arc_blade__sci-fi_energy_sword.glb",
+      "priority": 2
+    },
+    {
+      "id": "weapon_night_sword",
+      "path": "/assets/sword 3d models/night_sky_sword.glb",
+      "priority": 2
+    }
+  ],
+  "animations": [
+    {
+      "id": "anim_idle",
+      "path": "/assets/locomotion animations/idle.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_walk",
+      "path": "/assets/locomotion animations/Walking.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_run",
+      "path": "/assets/locomotion animations/running.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_jump",
+      "path": "/assets/locomotion animations/jump.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_backflip",
+      "path": "/assets/locomotion animations/Backflip.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_dodge_left",
+      "path": "/assets/locomotion animations/Dodging Left(1).glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_dodge_right",
+      "path": "/assets/locomotion animations/Dodging Right.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_strafe_l",
+      "path": "/assets/locomotion animations/left strafe.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_strafe_r",
+      "path": "/assets/locomotion animations/right strafe.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_strafe_l_walk",
+      "path": "/assets/locomotion animations/left strafe walking.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_strafe_r_walk",
+      "path": "/assets/locomotion animations/right strafe walking.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_turn_l",
+      "path": "/assets/locomotion animations/left turn.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_turn_r",
+      "path": "/assets/locomotion animations/right turn.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_turn_l90",
+      "path": "/assets/locomotion animations/left turn 90.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_turn_r90",
+      "path": "/assets/locomotion animations/right turn 90.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_fly",
+      "path": "/assets/locomotion animations/Flying.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_walk",
+      "path": "/assets/sword locomotion/Great Sword Walk.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_strafe",
+      "path": "/assets/sword locomotion/Great Sword Strafe.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_run",
+      "path": "/assets/sword locomotion/Run With Sword.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_sheathe",
+      "path": "/assets/sword locomotion/Sheathing Sword.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_withdraw",
+      "path": "/assets/sword locomotion/Withdrawing Sword.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_death",
+      "path": "/assets/sword locomotion/Two Handed Sword Death.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_cast",
+      "path": "/assets/sword ranged animations/casting spell with one hand sword in the other hand.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_hook_punch",
+      "path": "/assets/melee animations/Hook Punch.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_hurricane_kick",
+      "path": "/assets/melee animations/Hurricane Kick.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_kicking",
+      "path": "/assets/melee animations/Kicking.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_mma_kick",
+      "path": "/assets/melee animations/Mma Kick.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_elbow_combo",
+      "path": "/assets/melee animations/Punch To Elbow Combo.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_quad_punch",
+      "path": "/assets/melee animations/Quad Punch.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_uppercut",
+      "path": "/assets/melee animations/Uppercut Jab.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_block_idle",
+      "path": "/assets/melee animations/Standing Block Idle.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_inward_block",
+      "path": "/assets/melee animations/Inward Block.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_slash",
+      "path": "/assets/sword locomotion/Great Sword Slash.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_jump_atk",
+      "path": "/assets/sword melee attacks animations/Great Sword Jump Attack.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_in_slash",
+      "path": "/assets/sword melee attacks animations/Stable Sword In Slash.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_out_slash",
+      "path": "/assets/sword melee attacks animations/Stable Sword Out Slash.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_whirlwind",
+      "path": "/assets/sword ranged animations/Great Sword Slash Whilrwind.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_inward_shock",
+      "path": "/assets/sword melee attacks animations/Stable Sword Inward Slash.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_sw_outward_shock",
+      "path": "/assets/sword ranged animations/Stable Sword Outward ShockwaveSlash.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_cast_spell",
+      "path": "/assets/spells animations/Casting Spell.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_magic_heal",
+      "path": "/assets/spells animations/Magic Heal.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_magic_cast",
+      "path": "/assets/spells animations/Magic Spell Casting.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_two_hand_spell",
+      "path": "/assets/spells animations/Two Hand Spell Casting.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_aura_boomerang",
+      "path": "/assets/spells animations/aura boomerang.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_special_vfx",
+      "path": "/assets/spells animations/SpecialMove_004_00_All_VFX.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_2h_magic_atk",
+      "path": "/assets/spells animations/Standing 2H Magic Attack 03.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_spell_sword",
+      "path": "/assets/sword ranged animations/Spell cast with Sword.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_death_1",
+      "path": "/assets/dying animations/Dying (1).glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_death_2",
+      "path": "/assets/dying animations/Dying (2).glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_death_3",
+      "path": "/assets/dying animations/Dying.glb",
+      "priority": 1
+    },
+    {
+      "id": "anim_mx_bash",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_bash_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_hell_slammer_a",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_hell_slammer_A_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_hell_slammer_b",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_hell_slammer_B_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_heavy_weapon_swing",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_heavy_weapon_swing_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_smash",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_smash_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_leg_sweep",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_leg_sweep_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_side_hit",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_side_hit_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_stomp",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_stomp_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_stomping",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_stomping_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_upward_thrust",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_upward_thrust_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_throw",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_throw_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_throwing",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_throwing_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_throw_object",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_throw_object_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_big_kidney_hit",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_big_kidney_hit_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_big_side_hit",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_big_side_hit_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_head_hit",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_head_hit_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_hit_back_of_head",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_hit_on_back_of_head_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_hit_on_legs",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_hit_on_legs_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_hit_side_body",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_hit_on_side_of_body_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_hit_side_head",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_hit_on_side_of_head_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_hit_on_back",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_hit_on_the_back_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_kidney_hit",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_kidney_hit_mixamo_Motion.glb",
+      "priority": 2
+    },
+    {
+      "id": "anim_mx_fist_pump",
+      "path": "/assets/alt combat animations/mixamo_combat/Mixamo_fist_pump_mixamo_Motion.glb",
+      "priority": 2
+    }
+  ],
+  "textures": [],
+  "audio": []
+}

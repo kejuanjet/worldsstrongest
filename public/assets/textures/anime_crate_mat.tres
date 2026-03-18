@@ -1,0 +1,19 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://scripts/turn-based-rpg-engine/scripts/visual/cel_shader.gdshader" id="1_cel"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_cel")
+shader_parameter/base_color = Color(0.8, 0.5, 0.2, 1)
+shader_parameter/color_split = 0.5
+shader_parameter/shadow_softness = 0.02
+shader_parameter/shadow_color = Color(0.4, 0.2, 0.1, 1)
+shader_parameter/mid_color = Color(0.6, 0.35, 0.15, 1)
+shader_parameter/color_split_mid = 0.7
+shader_parameter/rim_threshold = 0.8
+shader_parameter/rim_softness = 0.05
+shader_parameter/specular_threshold = 0.95
+shader_parameter/specular_softness = 0.05
+shader_parameter/use_halftone = true
+shader_parameter/halftone_size = 60.0

@@ -1,0 +1,549 @@
+{
+  "GOKU": {
+    "id": "GOKU",
+    "label": "Atlas",
+    "modelPath": "/assets/models/ayo.glb",
+    "desiredHeightM": 1.8,
+    "basePowerLevel": 3000000,
+    "baseSpeed": 12,
+    "baseStamina": 100,
+    "transformations": [
+      {
+        "id": "SSJ1",
+        "label": "Ascendant I",
+        "plMultiplier": 50,
+        "kiCost": 20,
+        "color": {
+          "r": 1,
+          "g": 0.95,
+          "b": 0.3,
+          "__type": "Color3"
+        }
+      },
+      {
+        "id": "SSJ2",
+        "label": "Ascendant II",
+        "plMultiplier": 100,
+        "kiCost": 40,
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 0.5,
+          "__type": "Color3"
+        }
+      },
+      {
+        "id": "SSJ3",
+        "label": "Ascendant III",
+        "plMultiplier": 400,
+        "kiCost": 80,
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 0.7,
+          "__type": "Color3"
+        }
+      },
+      {
+        "id": "SSB",
+        "label": "Azure Ascendant",
+        "plMultiplier": 1000,
+        "kiCost": 100,
+        "color": {
+          "r": 0.3,
+          "g": 0.7,
+          "b": 1,
+          "__type": "Color3"
+        }
+      }
+    ]
+  },
+  "VEGETA": {
+    "id": "VEGETA",
+    "label": "Nova",
+    "modelPath": "/assets/models/RAYNEFBX.glb",
+    "desiredHeightM": 1.73,
+    "basePowerLevel": 2800000,
+    "baseSpeed": 13,
+    "baseStamina": 90,
+    "transformations": [
+      {
+        "id": "SSJ1",
+        "label": "Ascendant I",
+        "plMultiplier": 50,
+        "kiCost": 20,
+        "color": {
+          "r": 1,
+          "g": 0.95,
+          "b": 0.3,
+          "__type": "Color3"
+        }
+      },
+      {
+        "id": "SSJ2",
+        "label": "Ascendant II",
+        "plMultiplier": 100,
+        "kiCost": 40,
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 0.5,
+          "__type": "Color3"
+        }
+      },
+      {
+        "id": "SSB",
+        "label": "Azure Ascendant",
+        "plMultiplier": 1000,
+        "kiCost": 100,
+        "color": {
+          "r": 0.3,
+          "g": 0.7,
+          "b": 1,
+          "__type": "Color3"
+        }
+      },
+      {
+        "id": "SSBE",
+        "label": "Azure Overdrive",
+        "plMultiplier": 1250,
+        "kiCost": 120,
+        "color": {
+          "r": 0.1,
+          "g": 0.4,
+          "b": 1,
+          "__type": "Color3"
+        }
+      }
+    ]
+  },
+  "GOHAN": {
+    "id": "GOHAN",
+    "label": "Kairo",
+    "modelPath": "/assets/models/ayo.glb",
+    "desiredHeightM": 1.76,
+    "basePowerLevel": 2500000,
+    "baseSpeed": 11,
+    "baseStamina": 95,
+    "transformations": [
+      {
+        "id": "SSJ1",
+        "label": "Ascendant I",
+        "plMultiplier": 50,
+        "kiCost": 20,
+        "color": {
+          "r": 1,
+          "g": 0.95,
+          "b": 0.3,
+          "__type": "Color3"
+        }
+      },
+      {
+        "id": "SSJ2",
+        "label": "Ascendant II",
+        "plMultiplier": 100,
+        "kiCost": 40,
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 0.5,
+          "__type": "Color3"
+        }
+      },
+      {
+        "id": "MYSTIC",
+        "label": "Awakened Focus",
+        "plMultiplier": 850,
+        "kiCost": 60,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 1,
+          "__type": "Color3"
+        }
+      }
+    ]
+  },
+  "PICCOLO": {
+    "id": "PICCOLO",
+    "label": "Verdant",
+    "modelPath": "/assets/models/RAYNEFBX.glb",
+    "desiredHeightM": 2.08,
+    "basePowerLevel": 1800000,
+    "baseSpeed": 10,
+    "baseStamina": 110,
+    "transformations": [
+      {
+        "id": "SYNC",
+        "label": "Resonance Link",
+        "plMultiplier": 3,
+        "kiCost": 10,
+        "color": {
+          "r": 0.2,
+          "g": 0.8,
+          "b": 0.2,
+          "__type": "Color3"
+        }
+      },
+      {
+        "id": "ORANGE",
+        "label": "Ember Giant",
+        "plMultiplier": 500,
+        "kiCost": 70,
+        "color": {
+          "r": 1,
+          "g": 0.5,
+          "b": 0.1,
+          "__type": "Color3"
+        }
+      }
+    ]
+  },
+  "AYO": {
+    "id": "AYO",
+    "label": "Ayo",
+    "modelPath": "/assets/models/ayo.glb",
+    "desiredHeightM": 1.905,
+    "basePowerLevel": 2500000,
+    "baseSpeed": 13,
+    "baseStamina": 85,
+    "stances": [
+      "MELEE",
+      "SWORD"
+    ],
+    "defaultStance": "MELEE",
+    "stanceSwitchCost": 10,
+    "transformations": [
+      {
+        "id": "RAGE",
+        "label": "Combat Rage",
+        "plMultiplier": 40,
+        "kiCost": 25,
+        "color": {
+          "r": 1,
+          "g": 0.3,
+          "b": 0.1,
+          "__type": "Color3"
+        }
+      }
+    ],
+    "beamAttacks": [
+      "AYO_MELEE_BEAM",
+      "AYO_SWORD_BEAM"
+    ]
+  },
+  "HANA": {
+    "id": "HANA",
+    "label": "Hana",
+    "modelPath": "/assets/models/hana.glb",
+    "desiredHeightM": 1.67,
+    "basePowerLevel": 1200000,
+    "baseSpeed": 10,
+    "baseStamina": 140,
+    "stances": [
+      "MELEE"
+    ],
+    "defaultStance": "MELEE",
+    "stanceSwitchCost": 0,
+    "transformations": [
+      {
+        "id": "ARCANE",
+        "label": "Arcane Awakening",
+        "plMultiplier": 20,
+        "kiCost": 30,
+        "color": {
+          "r": 0.7,
+          "g": 0.3,
+          "b": 1,
+          "__type": "Color3"
+        }
+      }
+    ],
+    "spellAttacks": [
+      "HEAL_PULSE",
+      "MAGIC_HEAL",
+      "TWO_HAND_SPELL"
+    ]
+  },
+  "RAYNE": {
+    "id": "RAYNE",
+    "label": "Rayne",
+    "modelPath": "/assets/models/RAYNEFBX.glb",
+    "desiredHeightM": 1.83,
+    "basePowerLevel": 2200000,
+    "baseSpeed": 11,
+    "baseStamina": 100,
+    "stances": [
+      "MELEE"
+    ],
+    "defaultStance": "MELEE",
+    "stanceSwitchCost": 0,
+    "transformations": [
+      {
+        "id": "FURY",
+        "label": "Berserk Fury",
+        "plMultiplier": 60,
+        "kiCost": 20,
+        "color": {
+          "r": 0.8,
+          "g": 0.1,
+          "b": 0.1,
+          "__type": "Color3"
+        }
+      }
+    ]
+  },
+  "AKADEMIKS": {
+    "id": "AKADEMIKS",
+    "label": "Akademiks",
+    "modelPath": "/assets/models/enemies/Akademiks.glb",
+    "desiredHeightM": 1.75,
+    "basePowerLevel": 800000,
+    "baseSpeed": 9,
+    "baseStamina": 75,
+    "stances": [
+      "SWORD"
+    ],
+    "defaultStance": "SWORD",
+    "stanceSwitchCost": 0,
+    "transformations": [],
+    "attackProfiles": [
+      {
+        "label": "Sword Rush",
+        "attacks": [
+          "MELEE_LIGHT",
+          "MELEE_LIGHT",
+          "MELEE_HEAVY",
+          "KI_BLAST"
+        ]
+      },
+      {
+        "label": "Ranged Sword",
+        "attacks": [
+          "KI_BLAST",
+          "MELEE_HEAVY",
+          "KI_BLAST",
+          "MELEE_LIGHT"
+        ]
+      }
+    ],
+    "attackAnimVariants": {
+      "heavy": [
+        "ATTACK_HEAVY_ALT_1",
+        "ATTACK_HEAVY_ALT_4"
+      ]
+    }
+  },
+  "GRANNY": {
+    "id": "GRANNY",
+    "label": "Granny",
+    "modelPath": "/assets/models/enemies/Granny.glb",
+    "desiredHeightM": 1.64,
+    "basePowerLevel": 500000,
+    "baseSpeed": 7,
+    "baseStamina": 60,
+    "stances": [
+      "MELEE"
+    ],
+    "defaultStance": "MELEE",
+    "stanceSwitchCost": 0,
+    "transformations": [],
+    "attackProfiles": [
+      {
+        "label": "Scrappy",
+        "attacks": [
+          "MELEE_LIGHT",
+          "MELEE_LIGHT",
+          "MELEE_LIGHT",
+          "MELEE_HEAVY"
+        ]
+      },
+      {
+        "label": "Desperate",
+        "attacks": [
+          "MELEE_LIGHT",
+          "MELEE_HEAVY",
+          "MELEE_HEAVY",
+          "RUSH_COMBO"
+        ]
+      }
+    ],
+    "attackAnimVariants": {
+      "light": [
+        "ATTACK_LIGHT_1",
+        "ATTACK_LIGHT_2",
+        "ATTACK_LIGHT_ALT_1",
+        "ATTACK_LIGHT_ALT_2"
+      ]
+    }
+  },
+  "JELLYROLL": {
+    "id": "JELLYROLL",
+    "label": "Jelly Roll",
+    "modelPath": "/assets/models/enemies/Jelly roll.glb",
+    "desiredHeightM": 1.96,
+    "basePowerLevel": 1500000,
+    "baseSpeed": 8,
+    "baseStamina": 120,
+    "stances": [
+      "MELEE"
+    ],
+    "defaultStance": "MELEE",
+    "stanceSwitchCost": 0,
+    "transformations": [],
+    "attackProfiles": [
+      {
+        "label": "Crusher",
+        "attacks": [
+          "MELEE_HEAVY",
+          "MELEE_HEAVY",
+          "MELEE_HEAVY",
+          "MELEE_LIGHT"
+        ]
+      },
+      {
+        "label": "Berserker",
+        "attacks": [
+          "MELEE_HEAVY",
+          "RUSH_COMBO",
+          "MELEE_HEAVY",
+          "MELEE_HEAVY"
+        ]
+      },
+      {
+        "label": "Spammer",
+        "attacks": [
+          "MELEE_LIGHT",
+          "MELEE_HEAVY",
+          "MELEE_LIGHT",
+          "MELEE_HEAVY"
+        ]
+      }
+    ],
+    "attackAnimVariants": {
+      "heavy": [
+        "ATTACK_HEAVY_ALT_2",
+        "ATTACK_HEAVY_ALT_3",
+        "ATTACK_HEAVY_ALT_5"
+      ]
+    }
+  },
+  "OPP": {
+    "id": "OPP",
+    "label": "Opp",
+    "modelPath": "/assets/models/enemies/opp.glb",
+    "desiredHeightM": 1.83,
+    "basePowerLevel": 700000,
+    "baseSpeed": 11,
+    "baseStamina": 80,
+    "stances": [
+      "SWORD"
+    ],
+    "defaultStance": "SWORD",
+    "stanceSwitchCost": 0,
+    "transformations": [],
+    "attackProfiles": [
+      {
+        "label": "Swordsman",
+        "attacks": [
+          "MELEE_LIGHT",
+          "MELEE_LIGHT",
+          "MELEE_HEAVY",
+          "KI_BLAST"
+        ]
+      },
+      {
+        "label": "Ki Sniper",
+        "attacks": [
+          "KI_BLAST",
+          "KI_BLAST",
+          "MELEE_HEAVY",
+          "MELEE_LIGHT"
+        ]
+      }
+    ],
+    "attackAnimVariants": {
+      "light": [
+        "ATTACK_LIGHT_1",
+        "ATTACK_LIGHT_ALT_3",
+        "ATTACK_LIGHT_ALT_4"
+      ],
+      "heavy": [
+        "ATTACK_HEAVY_ALT_4"
+      ]
+    }
+  },
+  "LEBRON": {
+    "id": "LEBRON",
+    "label": "Lebron",
+    "modelPath": "/assets/models/enemies/Lebron.glb",
+    "desiredHeightM": 2.06,
+    "basePowerLevel": 2000000,
+    "baseSpeed": 13,
+    "baseStamina": 110,
+    "stances": [
+      "MELEE",
+      "SWORD"
+    ],
+    "defaultStance": "MELEE",
+    "stanceSwitchCost": 8,
+    "isBoss": true,
+    "transformations": [
+      {
+        "id": "KING_MODE",
+        "label": "King Mode",
+        "plMultiplier": 30,
+        "kiCost": 35,
+        "color": {
+          "r": 0.9,
+          "g": 0.7,
+          "b": 0.1,
+          "__type": "Color3"
+        }
+      }
+    ],
+    "attackProfiles": [
+      {
+        "label": "King",
+        "attacks": [
+          "MELEE_LIGHT",
+          "MELEE_HEAVY",
+          "KI_BLAST",
+          "RUSH_COMBO"
+        ]
+      },
+      {
+        "label": "Dominant",
+        "attacks": [
+          "MELEE_HEAVY",
+          "MELEE_HEAVY",
+          "KI_BLAST",
+          "MELEE_LIGHT"
+        ]
+      },
+      {
+        "label": "Flashy",
+        "attacks": [
+          "RUSH_COMBO",
+          "MELEE_LIGHT",
+          "MELEE_HEAVY",
+          "KI_BLAST"
+        ]
+      }
+    ],
+    "attackAnimVariants": {
+      "light": [
+        "ATTACK_LIGHT_1",
+        "ATTACK_LIGHT_2",
+        "ATTACK_LIGHT_ALT_5",
+        "ATTACK_THROW_1"
+      ],
+      "heavy": [
+        "ATTACK_HEAVY",
+        "ATTACK_HEAVY_ALT_1",
+        "ATTACK_HEAVY_ALT_2",
+        "ATTACK_HEAVY_ALT_3"
+      ]
+    }
+  }
+}
