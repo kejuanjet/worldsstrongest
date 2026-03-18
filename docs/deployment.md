@@ -26,6 +26,10 @@ npx vite preview --host 0.0.0.0 --port 4173
 
 The repo does not yet include an installer packager such as electron-builder or Electron Forge. If you want distributable installers, the next step is to add one of those tools, then wire a dedicated packaging script that bundles the Electron shell plus the built web assets.
 
+## Large assets
+
+GitHub warned about large model files during the first push. The repository now tracks `*.glb` and `*.Fbx` through Git LFS for future changes. If you add or replace large binary assets, install Git LFS locally and run `git lfs track` for the new file types before committing.
+
 Until then, the practical desktop path is:
 
 ```sh
