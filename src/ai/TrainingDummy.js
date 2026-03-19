@@ -166,7 +166,7 @@ export class TrainingDummy {
    * @param {number} attackerSlot - Slot of the attacker
    * @returns {object} Result with actual damage and blocking info
    */
-  takeDamage(damage, attackId, attackerSlot) {
+  takeDamage(damage, _attackId, _attackerSlot) {
     if (this.isDead) return { actual: 0, blocked: false, dodged: false };
     
     // Check for dodge (evasive type)
@@ -382,7 +382,7 @@ export class TrainingDummyManager {
    * Remove all dummies
    */
   clearAll() {
-    for (const [id, dummy] of this.dummies) {
+    for (const [_id, dummy] of this.dummies) {
       dummy.dispose();
     }
     this.dummies.clear();

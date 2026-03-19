@@ -7,6 +7,7 @@
     "basePowerLevel": 3000000,
     "baseSpeed": 12,
     "baseStamina": 100,
+    "ultimateAttack": "SPIRIT_BOMB",
     "transformations": [
       {
         "id": "SSJ1",
@@ -66,6 +67,7 @@
     "basePowerLevel": 2800000,
     "baseSpeed": 13,
     "baseStamina": 90,
+    "ultimateAttack": "FINAL_FLASH",
     "transformations": [
       {
         "id": "SSJ1",
@@ -125,6 +127,7 @@
     "basePowerLevel": 2500000,
     "baseSpeed": 11,
     "baseStamina": 95,
+    "ultimateAttack": "MASENKO",
     "transformations": [
       {
         "id": "SSJ1",
@@ -172,6 +175,7 @@
     "basePowerLevel": 1800000,
     "baseSpeed": 10,
     "baseStamina": 110,
+    "ultimateAttack": "SPECIAL_BEAM_CANNON",
     "transformations": [
       {
         "id": "SYNC",
@@ -213,6 +217,7 @@
     ],
     "defaultStance": "MELEE",
     "stanceSwitchCost": 10,
+    "ultimateAttack": "AYO_SWORD_BEAM",
     "transformations": [
       {
         "id": "RAGE",
@@ -245,6 +250,7 @@
     ],
     "defaultStance": "MELEE",
     "stanceSwitchCost": 0,
+    "ultimateAttack": "MAGIC_HEAL",
     "transformations": [
       {
         "id": "ARCANE",
@@ -278,6 +284,7 @@
     ],
     "defaultStance": "MELEE",
     "stanceSwitchCost": 0,
+    "ultimateAttack": "RUSH_COMBO",
     "transformations": [
       {
         "id": "FURY",

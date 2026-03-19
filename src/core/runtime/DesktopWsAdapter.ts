@@ -5,5 +5,5 @@ export async function loadDesktopWebSocketServer(): Promise<unknown> {
     specifier: string,
   ) => Promise<{ WebSocketServer?: unknown }>;
   const mod = await dynamicImport("ws");
-  return mod?.WebSocketServer ?? null;
+  return mod.WebSocketServer ?? null;
 }

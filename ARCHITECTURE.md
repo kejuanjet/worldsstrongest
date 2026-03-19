@@ -9,24 +9,34 @@
 
 ```
 GameLoop (src/core/GameLoop.js)
-│  owns & wires every subsystem
+│  Composition root: owns render loop, delegates construction to createGameServices()
+│  Delegates concerns to focused runtime modules under src/core/runtime/
 │  runs render loop → _frame() every rAF tick
 │  runs fixed-step physics loop → stepSimulationRuntime() at 60 Hz
 │
-├── CharacterRegistry       — source of truth for ALL entity state
+├── createGameServices.ts    — factory that constructs all subsystems in dependency order
+│
+├── runtime/SceneSetup.js         — camera, lighting, day-night cycle init
+├── runtime/PerformanceRuntime.js — adaptive quality, FPS sampling, tier management
+├── runtime/HotkeyBindings.js     — global keyboard shortcuts
+├── runtime/DebugRuntime.js       — entity state dumps, automation-status publishing
+│
+├── CharacterRegistry (.ts) — source of truth for ALL entity state
 │     registry.slots        Map<slot, CharacterState>
 │     registry.getState(n)  read any entity
 │     emits:  onPlayerSpawned, onPlayerDied, onDamageTaken,
 │             onTransformChanged, onStanceChanged
 │
-├── MovementController      — integrates physics (reads input, writes state.velocity / position)
+├── MovementController (.ts) — integrates physics (reads input, writes state.velocity / position)
+│     accepts ReadonlyRegistry<MovementState> (narrowed view)
 │     applyInput(slot, input)     called inside stepSimulationRuntime
 │     getGroundY(pos)             ray-cast helper
 │
-├── CombatSystem            — attack validation, damage application
+├── CombatSystem (.ts)       — attack validation, damage application
+│     accepts CombatRegistry + KnockbackController (narrowed interfaces)
 │     processAttack(playerId, attackId, inputData)
 │       → deducts ki/stamina
-│       → sets state.isActionLocked = true   ← NEW
+│       → sets state.isActionLocked = true
 │       → returns CombatEvent
 │     emits:  onHit, onCombo, onKill
 │
@@ -34,19 +44,38 @@ GameLoop (src/core/GameLoop.js)
 │     update(delta)               runs every rAF frame (not fixed-step)
 │     triggerAttackLight/Heavy/KiBlast/RushCombo/BeamFire/Dodge(slot, cb)
 │       → plays one-shot clip
-│       → cb fires when clip ends → clears state.isActionLocked   ← NEW
+│       → cb fires when clip ends → clears state.isActionLocked
 │     getAnimator(slot) → CharacterAnimator.currentState
 │
 ├── EnemyAIController       — builds synthetic input for AI entities
 │     update(step)               called inside stepSimulationRuntime
 │       → reads CharacterState (isDead, isActionLocked, hp, ki …)
-│       → skips if actor.isActionLocked                            ← NEW
+│       → skips if actor.isActionLocked
 │       → calls _queueInput(slot, input)
 │     getBrainState(slot)        returns raw brain object for debugging
 │
-└── InputManager            — merges keyboard/gamepad into canonical InputFrame
+└── InputManager (.ts)      — merges keyboard/gamepad into canonical InputFrame
       consumed by stepSimulationRuntime for the local player slot
 ```
+
+### Narrowed Interfaces (src/core/types/CharacterViews.ts)
+
+Each subsystem imports only the CharacterState fields it needs — compile-time
+enforcement via TypeScript structural typing, zero runtime cost.
+
+| Interface | Consumer | Key Fields |
+|---|---|---|
+| `MovementState` | MovementController | position, velocity, isGrounded, isFlying, ki, stamina |
+| `CombatState` | CombatSystem | slot, position, ki, stamina, isDead, powerLevel |
+| `AIReadState` | EnemyAIController | hp, isDead, isActionLocked, position, teamId |
+| `AuraState` | AuraSystem | isActionLocked, isBlocking, rootNode, fxNode |
+| `AudioCharacterState` | AudioManager | position, characterId |
+| `AnimationCharacterState` | AnimationController | velocity, isFlying, animationGroups |
+| `HUDCharacterState` | HUD | hp, ki, stamina, characterDef |
+| `RenderState` | VFX systems | rootNode, mesh, auraColor |
+
+Registry wrappers: `ReadonlyRegistry<T>`, `QueryableRegistry<T>`,
+`CombatRegistry` (includes `applyDamage`/`applyHeal`).
 
 ---
 
@@ -102,7 +131,7 @@ state.isInvincible  // bool — immunity frames after being hit
 state.isActionLocked // bool — true while an attack animation is playing
 state.isAiControlled // bool — true for enemy/companion entities
 state.currentStance // "MELEE" | "SWORD"
-state.characterId   // key in CHARACTER_ROSTER (CharacterRegistry.js)
+state.characterId   // key in CHARACTER_ROSTER (CharacterRegistry.ts)
 state.slot          // numeric slot index (0 = local player)
 state.teamId        // "HERO" | "ENEMY"
 ```
@@ -167,7 +196,7 @@ Only `CITY` has a confirmed model file (`/assets/full_gameready_city_buildings.g
 ### 7. Character & Enemy registries
 
 ```
-CHARACTER_ROSTER  (CharacterRegistry.js)   — playable + NPC visual definitions
+CHARACTER_ROSTER  (CharacterRegistry.ts)   — playable + NPC visual definitions
   { id, label, modelPath, desiredHeightM, stances, transformations, … }
 
 ENEMY_ROSTER  (EnemyRegistry.ts)           — AI combat definitions

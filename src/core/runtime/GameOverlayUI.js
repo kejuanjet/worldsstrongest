@@ -23,6 +23,11 @@ const OVERLAY_COPY = {
     subtitle: "Unlock landmarks across the world and route between them from active beacons.",
     tab: "world",
   },
+  dev: {
+    title: "Dev Console",
+    subtitle: "Live-tweak engine variables without reloading.",
+    tab: "dev",
+  },
 };
 
 const CONTROLS = [
@@ -39,6 +44,7 @@ const CONTROLS = [
   ["Change Stance", ["X"]],
   ["Ultimate", ["R"]],
   ["Travel Network", ["J"]],
+  ["Frame Advance", [". (paused)"]],
 ];
 
 export class GameOverlayUI {
@@ -50,7 +56,10 @@ export class GameOverlayUI {
     zoneManager,
     openWorld,
     getLocalSlot,
+    getCamera,
     onTogglePause,
+    onShowOverlay,
+    onAdvanceFrame,
     onAutosave,
     onSetQualityMode,
     getQualityMode,
@@ -63,7 +72,10 @@ export class GameOverlayUI {
     this.zoneManager = zoneManager;
     this.openWorld = openWorld;
     this.getLocalSlot = getLocalSlot;
+    this.getCamera = getCamera;
     this.onTogglePause = onTogglePause;
+    this.onShowOverlay = onShowOverlay;
+    this.onAdvanceFrame = onAdvanceFrame;
     this.onAutosave = onAutosave;
     this.onSetQualityMode = onSetQualityMode;
     this.getQualityMode = getQualityMode;
@@ -169,6 +181,10 @@ export class GameOverlayUI {
       this._createHintSeparator(),
       this._createHint("M", "Mute"),
       this._createHintSeparator(),
+      this._createHint("~", "Dev Console"),
+      this._createHintSeparator(),
+      this._createHint(".", "Step"),
+      this._createHintSeparator(),
       this._createHint("F1", "HUD"),
     );
     root.appendChild(hintBar);
@@ -201,9 +217,10 @@ export class GameOverlayUI {
     buttonStack.className = "ws-overlay__button-stack";
     buttonStack.append(
       this._createActionButton(">", "Resume", "#0ea5e9", "rgba(14,165,233,0.4)", () => this.onTogglePause(false)),
-      this._createActionButton("WORLD", "Travel Network", "#14b8a6", "rgba(20,184,166,0.4)", () => this.show("world", true)),
-      this._createActionButton("?", "Controls", "#f59e0b", "rgba(245,158,11,0.4)", () => this.show("help", true)),
-      this._createActionButton("S", "Settings", "#22c55e", "rgba(34,197,94,0.4)", () => this.show("settings", true)),
+      this._createActionButton("WORLD", "Travel Network", "#14b8a6", "rgba(20,184,166,0.4)", () => this._openOverlayMode("world")),
+      this._createActionButton("?", "Controls", "#f59e0b", "rgba(245,158,11,0.4)", () => this._openOverlayMode("help")),
+      this._createActionButton("S", "Settings", "#22c55e", "rgba(34,197,94,0.4)", () => this._openOverlayMode("settings")),
+      this._createActionButton("</>", "Dev Console", "#f43f5e", "rgba(244,63,94,0.4)", () => this._openOverlayMode("dev")),
       this._createActionButton("SAVE", "Save Progress", "#6366f1", "rgba(99,102,241,0.4)", () => this.onAutosave(true)),
       this._createActionButton("EXIT", "Return To Menu", "#ef4444", "rgba(239,68,68,0.4)", () => window.location.reload()),
     );
@@ -216,7 +233,8 @@ export class GameOverlayUI {
     const settingsTab = this._buildSettingsTab();
     const mainTab = this._buildMainTab();
     const worldTab = this._buildWorldTab();
-    right.append(controlsTab, settingsTab, mainTab, worldTab);
+    const devTab = this._buildDevTab();
+    right.append(controlsTab, settingsTab, mainTab, worldTab, devTab);
 
     panel.append(left, right);
     modal.appendChild(panel);
@@ -393,6 +411,94 @@ export class GameOverlayUI {
 
     this.tabs.set("world", tab);
     return tab;
+  }
+
+  _buildDevTab() {
+    const tab = document.createElement("div");
+    tab.className = "ws-overlay__tab";
+    tab.dataset.tab = "dev";
+
+    const header = document.createElement("div");
+    header.className = "ws-overlay__section-label";
+    header.textContent = "Engine Tweaks";
+    tab.appendChild(header);
+
+    const status = document.createElement("div");
+    status.className = "ws-overlay__travel-source";
+    status.textContent = "Press . while paused to advance one frame for animation review.";
+    tab.appendChild(status);
+
+    const stepButton = this._createActionButton(".", "Advance One Frame", "#f43f5e", "rgba(244,63,94,0.4)", () => {
+      this.onAdvanceFrame?.();
+    });
+    stepButton.style.marginBottom = "12px";
+    tab.appendChild(stepButton);
+
+    const settingsList = document.createElement("div");
+    settingsList.className = "ws-overlay__settings-list";
+    
+    settingsList.append(
+      this._createEngineSlider("Ground Speed", CONFIG.movement.groundSpeed, 5, 40, (val) => { CONFIG.movement.groundSpeed = val; applyConfig("movement", { groundSpeed: val }); }, 0.5),
+      this._createEngineSlider("Gravity", CONFIG.movement.defaultGravity, -50, 0, (val) => { CONFIG.movement.defaultGravity = val; applyConfig("movement", { defaultGravity: val }); }, 0.5),
+      this._createEngineSlider("Dodge Speed", CONFIG.movement.dodgeSpeed, 10, 50, (val) => { CONFIG.movement.dodgeSpeed = val; applyConfig("movement", { dodgeSpeed: val }); }, 0.5),
+      this._createEngineSlider("Dodge Duration", CONFIG.movement.dodgeDuration, 0.1, 1.0, (val) => { CONFIG.movement.dodgeDuration = val; applyConfig("movement", { dodgeDuration: val }); }, 0.05),
+      this._createEngineSlider("Knockback Decay", CONFIG.combat.knockbackDecay, 1, 20, (val) => { CONFIG.combat.knockbackDecay = val; applyConfig("combat", { knockbackDecay: val }); }, 0.5),
+      this._createEngineSlider("Base Damage Multiplier", CONFIG.combat.baseDamageMultiplier, 0.1, 3.0, (val) => { CONFIG.combat.baseDamageMultiplier = val; applyConfig("combat", { baseDamageMultiplier: val }); }, 0.05),
+      this._createEngineSlider("Camera Distance", CONFIG.camera.defaultRadius, 2, 15, (val) => {
+        CONFIG.camera.defaultRadius = val;
+        const camera = this.getCamera?.();
+        if (camera) {
+          camera.radius = val;
+        }
+        applyConfig("camera", { defaultRadius: val });
+      }, 0.25)
+    );
+
+    tab.appendChild(settingsList);
+    this.tabs.set("dev", tab);
+    return tab;
+  }
+
+  _createEngineSlider(label, initialValue, min, max, onChange, step = 0.5) {
+    const wrapper = document.createElement("label");
+    wrapper.className = "ws-overlay__setting";
+
+    const header = document.createElement("div");
+    header.className = "ws-overlay__setting-header";
+
+    const labelEl = document.createElement("span");
+    labelEl.className = "ws-overlay__setting-label";
+    labelEl.textContent = label;
+
+    const valueEl = document.createElement("span");
+    valueEl.className = "ws-overlay__setting-value";
+    valueEl.style.color = "#f43f5e";
+    valueEl.textContent = initialValue.toFixed(1);
+
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = min;
+    slider.max = max;
+    slider.step = `${step}`;
+    slider.value = initialValue;
+    slider.className = "ws-overlay__slider";
+    slider.addEventListener("input", () => {
+      const numeric = Number(slider.value);
+      valueEl.textContent = numeric.toFixed(1);
+      onChange(numeric);
+    });
+
+    header.append(labelEl, valueEl);
+    wrapper.append(header, slider);
+    return wrapper;
+  }
+
+  _openOverlayMode(mode) {
+    if (this.onShowOverlay) {
+      this.onShowOverlay(mode, true);
+      return;
+    }
+    this.show(mode, true);
   }
 
   _createSliderSetting(label, key, value, color) {

@@ -1,4 +1,4 @@
-const MAX_BOOT_PRELOAD_MS = 1500;
+import { preloadBootEssentials } from "./BootEssentials.js";
 
 async function loadBootstrapDependencies(log) {
   try {
@@ -13,7 +13,7 @@ async function loadBootstrapDependencies(log) {
       import("../GameLoop.js"),
       import("../engine.js"),
       import("@babylonjs/loaders"),
-      import("../CharacterRegistry.js"),
+      import("../../data/CharacterRoster.js"),
       import("../ZoneManager.js"),
       import("../../save/SaveGameStore.js"),
     ]);
@@ -28,46 +28,6 @@ async function loadBootstrapDependencies(log) {
   } catch (error) {
     log?.error?.("core module load failed:", error);
     throw new Error(`Core module load failed: ${error?.message ?? error}`);
-  }
-}
-
-async function preloadBootEssentials({ loader, gameLoop, SaveGameStore, setLoadingText }) {
-  let essentialsSettled = false;
-  setLoadingText?.("Preloading essentials...");
-
-  const essentialsPromise = loader.loadEssentials()
-    .then(() => {
-      essentialsSettled = true;
-      console.log("[main] loadEssentials completed");
-      gameLoop.audioManager.buildPools();
-      const profile = new SaveGameStore().load("default");
-      const prewarmIds = [
-        profile.selectedCharacterId ?? "AYO",
-        "RAYNE",
-      ];
-      void gameLoop.animationController.prewarmCharacterSet(prewarmIds).catch((error) => {
-        console.warn("[main] Animation prewarm failed (non-fatal):", error);
-      });
-    })
-    .catch((error) => {
-      essentialsSettled = true;
-      console.warn("[main] Some assets failed to load (non-fatal):", error);
-    })
-    .finally(() => {
-      if (typeof loader.loadBackground === "function") {
-        loader.loadBackground();
-      } else if (typeof loader.voidBackgroundLoad === "function") {
-        loader.voidBackgroundLoad();
-      }
-    });
-
-  await Promise.race([
-    essentialsPromise,
-    new Promise((resolve) => setTimeout(resolve, MAX_BOOT_PRELOAD_MS)),
-  ]);
-
-  if (!essentialsSettled) {
-    setLoadingText?.("Finishing setup in background...");
   }
 }
 

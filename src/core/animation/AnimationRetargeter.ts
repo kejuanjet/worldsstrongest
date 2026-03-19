@@ -365,9 +365,9 @@ export class AnimationRetargeter {
 
     const elapsed = performance.now() - startedAt;
     this._retargetCount += 1;
-    this._averageRetargetMs += (elapsed - this._averageRetargetMs) / this._retargetCount;
+    this._averageRetargetMs += (elapsed - (this._averageRetargetMs || 0)) / this._retargetCount;
     console.debug(
-      `[AnimationController] Retarget batch for ${characterId} took ${elapsed.toFixed(1)}ms (${this._averageRetargetMs.toFixed(1)}ms avg)`,
+      `[AnimationController] Retarget batch for ${characterId} took ${Number(elapsed || 0).toFixed(1)}ms (${Number(this._averageRetargetMs || 0).toFixed(1)}ms avg)`,
     );
   }
 

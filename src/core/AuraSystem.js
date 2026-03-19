@@ -195,10 +195,11 @@ function getAuraBudget(tier = "MED") {
 // One per character slot. Manages all VFX layers for a single character.
 
 class AuraInstance {
-  constructor(slot, scene, assetLoader) {
+  constructor(slot, scene, assetLoader, registry) {
     this.slot         = slot;
     this.scene        = scene;
     this.assetLoader  = assetLoader;
+    this.registry     = registry;
     this.profile      = AURA_PROFILES.BASE;
     this.active       = true;
 
@@ -674,11 +675,9 @@ class AuraInstance {
   }
 
   _flashScreen(color) {
-    const el = document.getElementById("transformFlash");
-    if (!el) return;
-    el.style.background = `rgb(${Math.round(color.r*255)},${Math.round(color.g*255)},${Math.round(color.b*255)})`;
-    el.style.opacity    = "0.6";
-    setTimeout(() => { el.style.opacity = "0"; }, 120);
+    if (this.registry && typeof this.registry.requestScreenFlash === "function") {
+      this.registry.requestScreenFlash(color, 120, 0.6);
+    }
   }
 
   dispose() {
@@ -696,7 +695,7 @@ const COMBAT_AURA_LINGER = 1.8;
 export class AuraSystem {
   /**
    * @param {import("@babylonjs/core").Scene} scene
-   * @param {import("../character/CharacterRegistry").CharacterRegistry} registry
+   * @param {import("./CharacterRegistry").CharacterRegistry} registry
    * @param {import("../core/AssetLoader").AssetLoader} assetLoader
    */
   constructor(scene, registry, assetLoader) {
@@ -711,7 +710,6 @@ export class AuraSystem {
     this._lastCombatActivity = new Map();
     this._performanceTier = "MED";
 
-    this._ensureFlashOverlay();
     this._wireEvents();
   }
 
@@ -763,7 +761,7 @@ export class AuraSystem {
   attachToSlot(slot, rootNode) {
     if (this._instances.has(slot)) this._instances.get(slot).dispose();
 
-    const instance = new AuraInstance(slot, this.scene, this.assetLoader);
+    const instance = new AuraInstance(slot, this.scene, this.assetLoader, this.registry);
     instance.setPerformanceTier(this._performanceTier);
     instance.attach(rootNode);
     this._instances.set(slot, instance);
@@ -848,23 +846,6 @@ export class AuraSystem {
     });
   }
 
-  // ─── Flash Overlay Prep ───────────────────────────────────────────────────
-
-  _ensureFlashOverlay() {
-    if (document.getElementById("transformFlash")) return;
-    const el = document.createElement("div");
-    el.id = "transformFlash";
-    Object.assign(el.style, {
-      position:   "fixed",
-      inset:      "0",
-      opacity:    "0",
-      pointerEvents: "none",
-      transition: "opacity 0.08s ease",
-      zIndex:     "9998",
-    });
-    document.body.appendChild(el);
-  }
-
   setPerformanceTier(tier = "MED") {
     this._performanceTier = tier === "LOW" ? "LOW" : tier === "HIGH" ? "HIGH" : "MED";
     for (const instance of this._instances.values()) {
@@ -875,7 +856,6 @@ export class AuraSystem {
   dispose() {
     for (const [, inst] of this._instances) inst.dispose();
     this._instances.clear();
-    document.getElementById("transformFlash")?.remove();
   }
 }
 function toColor4(color, fallbackAlpha = 1) {

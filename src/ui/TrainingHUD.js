@@ -34,6 +34,7 @@ export class TrainingHUD {
     this.firstHitTime = 0;
     this.damageSinceLastUpdate = 0;
     this.damageNumbers = [];
+    this._disposed = false;
     
     // Configuration
     this.damageNumberDuration = 1.5;
@@ -192,6 +193,31 @@ export class TrainingHUD {
     // Divider
     controlStack.addControl(this._createDivider());
     
+    // Real Enemies
+    const enemyLabel = this._createTextBlock("enemyLabel", "Spawn Enemy Roster:", {
+      fontSize: 14,
+      color: "#94a3b8",
+      textHorizontalAlignment: Control.HORIZONTAL_ALIGNMENT_LEFT,
+      paddingLeft: "10px",
+    });
+    controlStack.addControl(enemyLabel);
+    
+    const enemyGrid = new Grid("enemyGrid");
+    enemyGrid.width = "260px";
+    enemyGrid.height = "60px";
+    enemyGrid.addColumnDefinition(0.5);
+    enemyGrid.addColumnDefinition(0.5);
+    enemyGrid.addRowDefinition(1.0);
+    controlStack.addControl(enemyGrid);
+
+    const spawnLebron = this._createButton("spawn_lebron", "Lebron", "#eab308", () => this._spawnRealEnemy("LEBRON"));
+    const spawnGranny = this._createButton("spawn_granny", "Granny", "#ec4899", () => this._spawnRealEnemy("GRANNY"));
+    enemyGrid.addControl(spawnLebron, 0, 0);
+    enemyGrid.addControl(spawnGranny, 0, 1);
+
+    // Divider
+    controlStack.addControl(this._createDivider());
+    
     // Action buttons
     const actionStack = new StackPanel("actionStack");
     actionStack.isVertical = false;
@@ -232,6 +258,17 @@ export class TrainingHUD {
       }
     });
     grid.addControl(btn, row, col);
+  }
+
+  _spawnRealEnemy(enemyDefId) {
+    const playerState = this.registry?.getState(0);
+    if (playerState) {
+      const spawnPos = playerState.position.add(new Vector3(0, 0, 10));
+      this.registry.spawnEnemy(enemyDefId, null, spawnPos, {
+        teamId: "ENEMY",
+        isBoss: true
+      });
+    }
   }
 
   _createHelpPanel() {
@@ -397,6 +434,12 @@ export class TrainingHUD {
     // Update player resource displays
     const playerState = this.registry?.getState(0);
     if (playerState) {
+      // Enforce God Mode
+      if (this.godMode) {
+        playerState.hp = playerState.maxHP;
+        playerState.ki = playerState.maxKi;
+      }
+
       const hpPercent = Math.round((playerState.hp / playerState.maxHP) * 100);
       const kiPercent = Math.round((playerState.ki / playerState.maxKi) * 100);
       
@@ -502,15 +545,29 @@ export class TrainingHUD {
     damageText.left = `${screenPos.x}px`;
     damageText.top = `${screenPos.y}px`;
 
+    const entry = {
+      control: damageText,
+      createdAt: performance.now(),
+    };
+    this.damageNumbers.push(entry);
+
+    const disposeEntry = () => {
+      const index = this.damageNumbers.indexOf(entry);
+      if (index !== -1) {
+        this.damageNumbers.splice(index, 1);
+      }
+      damageText.dispose();
+    };
+
     // Animate up and fade
-    const startTime = performance.now();
+    const startTime = entry.createdAt;
     const startY = screenPos.y;
 
     const animateNumber = () => {
-      if (this._disposed) { damageText.dispose(); return; }
+      if (this._disposed) { disposeEntry(); return; }
       const elapsed = (performance.now() - startTime) / 1000;
       if (elapsed >= this.damageNumberDuration) {
-        damageText.dispose();
+        disposeEntry();
         return;
       }
 
@@ -528,7 +585,7 @@ export class TrainingHUD {
     animateNumber();
   }
 
-  _updateDamageNumbers(delta) {
+  _updateDamageNumbers(_delta) {
     const now = performance.now();
     for (let i = this.damageNumbers.length - 1; i >= 0; i--) {
       const dn = this.damageNumbers[i];
@@ -541,6 +598,10 @@ export class TrainingHUD {
 
   dispose() {
     this._disposed = true;
+    for (const dn of this.damageNumbers) {
+      dn.control.dispose();
+    }
+    this.damageNumbers.length = 0;
     this.advancedTexture.dispose();
     console.log("[TrainingHUD] Disposed");
   }

@@ -3,7 +3,6 @@ delete process.env.ELECTRON_RUN_AS_NODE;
 
 const { app, BrowserWindow, shell } = require("electron");
 const { spawn } = require("child_process");
-const path = require("path");
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -33,11 +32,8 @@ function startViteServer() {
       shell: true
     });
 
-    let output = '';
-    
     viteProcess.stdout.on('data', (data) => {
       const str = data.toString();
-      output += str;
       console.log('[vite]', str.trim());
       
       // Check if Vite is ready

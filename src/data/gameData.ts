@@ -55,6 +55,7 @@ export interface CharacterDefinition {
   stanceSwitchCost?: number;
   beamAttacks?: string[];
   spellAttacks?: string[];
+  ultimateAttack?: string;
   isBoss?: boolean;
   transformations: TransformationDefinition[];
   attackProfiles?: AttackProfile[];

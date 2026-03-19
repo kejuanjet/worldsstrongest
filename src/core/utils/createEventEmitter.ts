@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type AnyFn = (...args: any[]) => void;
 
 export interface EventEmitter<TEvents extends Record<string, AnyFn>> {

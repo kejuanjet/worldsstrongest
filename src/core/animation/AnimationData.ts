@@ -425,15 +425,9 @@ export function buildAnimationNameMap(
 
 // ─── Normalize Target Name ────────────────────────────────────────────────────
 
-export function normalizeTargetName(raw: string | null | undefined): string {
-  if (!raw) return "";
-  let value = String(raw).trim();
-  const pipeIdx = value.lastIndexOf("|");
-  if (pipeIdx >= 0) value = value.slice(pipeIdx + 1);
-  const colonIdx = value.lastIndexOf(":");
-  if (colonIdx >= 0) value = value.slice(colonIdx + 1);
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
-}
+import { normalizeTargetName } from "../utils/animationUtils.js";
+
+export { normalizeTargetName };
 
 function warnOnFallbackCycles(
   fallbackMap: Readonly<Record<string, readonly string[]>>,
@@ -539,6 +533,9 @@ export const STATE_FALLBACKS: Readonly<Record<string, readonly string[]>> = {
   ],
   [ANIM_STATE.BLOCK]: [
     ANIM_STATE.BLOCK_IDLE, ANIM_STATE.HURT, ANIM_STATE.IDLE,
+  ],
+  [ANIM_STATE.BLOCK_IDLE]: [
+    ANIM_STATE.BLOCK, ANIM_STATE.IDLE,
   ],
   [ANIM_STATE.HURT]: [
     ANIM_STATE.HIT_REACT_ALT_1, ANIM_STATE.HIT_REACT_ALT_2,

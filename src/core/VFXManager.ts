@@ -1,9 +1,6 @@
 import type { Scene, Vector3 } from "@babylonjs/core";
-// @ts-ignore – JS modules pending TS migration
 import { ScreenOverlays } from "./vfx/ScreenOverlays.js";
-// @ts-ignore
 import { WorldEffectPool } from "./vfx/WorldEffectPool.js";
-// @ts-ignore
 import { CONFIG } from "./index.js";
 
 export interface WeaponTrailOptions {
@@ -46,7 +43,7 @@ export class VFXManager {
   }
 
   public spawnWeaponTrail(worldPos: Vector3, direction: Vector3, opts: WeaponTrailOptions = {}): void {
-    if (this._disposed || !worldPos || !direction) return;
+    if (this._disposed) return;
     this._effects.spawnWeaponTrail(worldPos, direction, opts);
   }
 

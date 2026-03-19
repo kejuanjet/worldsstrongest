@@ -26,11 +26,11 @@ export function initFallbackPhysics(scene: Scene): PhysicsPluginLike | null {
   try {
     // Cannon.js is an optional legacy fallback; dynamic require keeps it out
     // of the main bundle and avoids TypeScript errors on the missing type defs.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+     
     const { CannonJSPlugin } = require("@babylonjs/core") as {
       CannonJSPlugin: new (...args: unknown[]) => unknown;
     };
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+     
     const CANNON = require("cannon") as unknown;
     const plugin = new CannonJSPlugin(true, 10, CANNON) as PhysicsPluginLike;
     scene.enablePhysics(new Vector3(0, -18, 0), plugin);

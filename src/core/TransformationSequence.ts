@@ -1,12 +1,10 @@
 import type { Scene, Vector3 } from "@babylonjs/core";
-// @ts-ignore – JS modules pending TS migration
 import { SEQUENCE_PROFILES } from "./transformation/TransformationProfiles.js";
-// @ts-ignore
 import { runTransformationTimeline } from "./transformation/TransformationTimeline.js";
 
 // Dependency references kept as `any` / loose types because those subsystems
 // are not yet typed. Add proper interfaces here as each system is migrated.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type AnySubsystem = any;
 
 export interface TransformationSequenceDeps {

@@ -4,13 +4,21 @@ import { isAuthoritativeMode, resolveAttackId, stepSimulationRuntime } from "./G
 
 describe("GameplayRuntime", () => {
   it("resolves character-specific and stance-sensitive attacks", () => {
-    const swordState = { characterId: "AYO", currentStance: "SWORD" };
-    const meleeState = { characterId: "GOKU", currentStance: "MELEE" };
+    const swordState = {
+      characterId: "AYO",
+      currentStance: "SWORD",
+      characterDef: { beamAttacks: ["AYO_MELEE_BEAM", "AYO_SWORD_BEAM"] },
+    };
+    const meleeState = {
+      characterId: "GOKU",
+      currentStance: "MELEE",
+      characterDef: { ultimateAttack: "SPIRIT_BOMB" },
+    };
 
     expect(resolveAttackId(swordState, { btnHeavy: true })).toBe("SWORD_HEAVY");
     expect(resolveAttackId(meleeState, { btnAttack: true })).toBe("MELEE_LIGHT");
-    expect(resolveAttackId({ characterId: "VEGETA", currentStance: "MELEE" }, { btnUltimate: true })).toBe("FINAL_FLASH");
-    expect(resolveAttackId({ characterId: "HANA", currentStance: "MELEE" }, { btnBlast: true })).toBe("TWO_HAND_SPELL");
+    expect(resolveAttackId({ characterId: "VEGETA", currentStance: "MELEE", characterDef: { ultimateAttack: "FINAL_FLASH" } }, { btnUltimate: true })).toBe("FINAL_FLASH");
+    expect(resolveAttackId({ characterId: "HANA", currentStance: "MELEE", characterDef: { beamAttacks: ["TWO_HAND_SPELL"] } }, { btnBlast: true })).toBe("TWO_HAND_SPELL");
   });
 
   it("marks only single-player, training, and host as authoritative", () => {

@@ -11,7 +11,6 @@ import {
   PostProcess,
   Effect,
   Vector2,
-  Color3,
   Color4,
   Scalar,
   ColorCurves,
@@ -325,7 +324,7 @@ export class PostProcessing {
    * @param {number} amount   0–200 (ChromaticAberration scale)
    * @param {number} decaySpeed   how fast it fades back to 0
    */
-  triggerChromaticAberration(amount = 60, decaySpeed = 8) {
+  triggerChromaticAberration(amount = 60, _decaySpeed = 8) {
     this._chromaticTarget = amount;
     // Schedule decay back to 0
     setTimeout(() => { this._chromaticTarget = 0; }, 80);

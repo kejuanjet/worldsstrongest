@@ -7,7 +7,7 @@ export class PhysicsTriggerObserver {
   private readonly triggerBodies: Map<string, unknown>;
   private readonly characterBodies: Map<number, unknown>;
   private readonly callbacks: Map<string, CollisionCallback>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private _observer: any | null = null;
 
   public constructor(
@@ -23,7 +23,7 @@ export class PhysicsTriggerObserver {
   }
 
   public attach(): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const p = this.plugin as any;
     if (!p?.onCollisionObservable || this._observer) return;
 
@@ -47,7 +47,7 @@ export class PhysicsTriggerObserver {
   }
 
   public dispose(): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const p = this.plugin as any;
     if (!this._observer || !p?.onCollisionObservable) return;
     p.onCollisionObservable.remove(this._observer);

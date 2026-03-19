@@ -73,7 +73,7 @@ ensureGltfLoaderRegistered();
 const availabilityCache = new Map<string, Promise<boolean>>();
 const resolutionCache = new Map<string, Promise<string>>();
 
-function normalizeAssetPath(assetPath: string): string {
+export function normalizeAssetPath(assetPath: string): string {
   // HACK: Auto-correct absolute Windows/Mac paths that leaked into data.
   // If the path contains "/assets/", strip everything before it.
   const normalizedSlashes = assetPath.replace(/\\/g, "/");
@@ -100,8 +100,8 @@ function normalizeAssetPath(assetPath: string): string {
   return assetPath.startsWith("/") ? assetPath : `/${assetPath}`;
 }
 
-function withTrailingSlash(assetPath: string): string {
-  return assetPath.endsWith("/") ? assetPath : `${assetPath}/`;
+export function withTrailingSlash(path: string): string {
+  return path.endsWith("/") ? path : `${path}/`;
 }
 
 export function getAssetUrlCandidates(assetPath: string): string[] {
@@ -134,6 +134,19 @@ export function getAssetUrlCandidates(assetPath: string): string[] {
   }
 
   return candidates;
+}
+
+/**
+ * Formats a loading progress snapshot into display-friendly strings.
+ */
+export function buildLoadingProgressSnapshot(
+  pct: number,
+  currentId: string = "",
+): { percentText: string; statusText: string } {
+  return {
+    percentText: `${pct}%`,
+    statusText: currentId ? `Loading: ${currentId}` : `Loading: ${pct}%`,
+  };
 }
 
 async function probeAsset(assetPath: string): Promise<boolean> {
@@ -558,7 +571,12 @@ export class AssetLoader {
       const startedAt = Date.now();
       const timeoutMs = 5000;
       const poll = (): void => {
-        if (texture.isReady() || (Date.now() - startedAt) >= timeoutMs) {
+        if (texture.isReady()) {
+          resolve();
+          return;
+        }
+        if ((Date.now() - startedAt) >= timeoutMs) {
+          console.warn(`[AssetLoader] Texture timed out after ${timeoutMs}ms:`, texture.name);
           resolve();
           return;
         }

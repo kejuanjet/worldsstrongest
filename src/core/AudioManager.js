@@ -389,7 +389,7 @@ export class AudioManager {
    * @param {Vector3} listenerPosition   local player's world position
    * @param {boolean} inCombat
    */
-  update(delta, listenerPosition, inCombat) {
+  update(delta, listenerPosition, _inCombat) {
     this._listenerPos.copyFrom(listenerPosition);
 
     // Let Babylon handle 3D audio positioning via the scene's audio engine
@@ -465,7 +465,7 @@ export class AudioManager {
    * Wire to game events.
    * @param {import("../combat/CombatSystem").CombatSystem} combat
    * @param {import("../world/ZoneManager").ZoneManager} zoneManager
-   * @param {import("../character/CharacterRegistry").CharacterRegistry} registry
+   * @param {import("./CharacterRegistry").CharacterRegistry} registry
    */
   wireEvents(combat, zoneManager, registry) {
     combat.on("onHit", (ev) => {

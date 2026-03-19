@@ -19,6 +19,15 @@ import { WorldEffectPool } from "./vfx/WorldEffectPool.js";
 
 // ─── Impact Profiles ──────────────────────────────────────────────────────────
 
+const FX_SETTINGS = {
+  hitstopCooldownMs: 120,
+  maxCraters: 20,
+  smokeLifeMs: 3000,
+  debrisLifeMs: 2500,
+  flashHoldMs: 60,
+  ultimateRingDelayMs: 120
+};
+
 const IMPACT_PROFILE = {
   LIGHT: {
     sparkCount:     100,
@@ -117,18 +126,20 @@ export class ImpactFX {
    * @param {import("@babylonjs/core").Scene} scene
    * @param {import("@babylonjs/core").ArcRotateCamera} camera
    * @param {import("../core/AssetLoader").AssetLoader} assetLoader
+   * @param {object} config Defaults to global CONFIG
    */
-  constructor(scene, camera, assetLoader) {
+  constructor(scene, camera, assetLoader, config = CONFIG) {
     this.scene       = scene;
     this.camera      = camera;
     this.assetLoader = assetLoader;
+    this.config      = config;
 
     /** Active screen shake state */
     this._shake = { active: false, magnitude: 0, duration: 0, elapsed: 0, origin: Vector3.Zero() };
 
     /** Hitstop state — freezes scene update for N ms */
     this._hitstop = { active: false, remaining: 0 };
-    this._hitstopCooldownMs = 120;
+    this._hitstopCooldownMs = FX_SETTINGS.hitstopCooldownMs;
     this._lastHitstopAt = Number.NEGATIVE_INFINITY;
     this._animationsWereEnabledBeforeHitstop = true;
 
@@ -138,14 +149,17 @@ export class ImpactFX {
 
     /** Active craters (persistent scene decals) */
     this._craters = [];
-    this._MAX_CRATERS = 20;
+    this._MAX_CRATERS = FX_SETTINGS.maxCraters;
     this._performanceTier = "MED";
     this._pooledEffects = new WorldEffectPool(scene);
     this._avgCreationMs = 0;
     this._creationCount = 0;
 
+    /** Safe lifecycle trackers mapped to game delta time */
+    this._scheduledTasks = [];
+    this._activeAnimations = [];
+
     this._buildShockwavePool();
-    this._buildFlashOverlay();
   }
 
   setPerformanceTier(tier = "MED") {
@@ -247,14 +261,14 @@ export class ImpactFX {
     const budget = this._getImpactBudget("ULTIMATE");
     this._measureCreation(() => {
       for (let i = 0; i < count; i++) {
-        setTimeout(() => {
+        this._schedule(i * FX_SETTINGS.ultimateRingDelayMs, () => {
           this._pooledEffects.spawnShockwave(
             position,
             this._colorToHex(color ?? profile.flashColor),
             7 + i * 4.5,
             0.24 + i * 0.04,
           );
-        }, i * 120);
+        });
       }
 
       this._pooledEffects.spawnHitSparks(position, "ULTIMATE", budget.sparkCount);
@@ -301,6 +315,14 @@ export class ImpactFX {
 
   // ─── Per-Frame Update ─────────────────────────────────────────────────────
 
+  _schedule(delayMs, cb) {
+    this._scheduledTasks.push({ remaining: delayMs, cb });
+  }
+
+  _animate(durationMs, onTick, onComplete) {
+    this._activeAnimations.push({ elapsed: 0, duration: durationMs, onTick, onComplete });
+  }
+
   update(delta) {
     this._pooledEffects.update(delta);
     // Hitstop — don't update anything else while frozen
@@ -319,6 +341,29 @@ export class ImpactFX {
     if (this._shake.active) {
       this._updateShake(delta);
     }
+
+    // Process game-time animations
+    const deltaMs = delta * 1000;
+    for (let i = this._activeAnimations.length - 1; i >= 0; i--) {
+      const anim = this._activeAnimations[i];
+      anim.elapsed += deltaMs;
+      const t = Math.min(1, anim.elapsed / anim.duration);
+      anim.onTick(t);
+      if (t >= 1) {
+        anim.onComplete?.();
+        this._activeAnimations.splice(i, 1);
+      }
+    }
+
+    // Process scheduled tasks
+    for (let i = this._scheduledTasks.length - 1; i >= 0; i--) {
+      const task = this._scheduledTasks[i];
+      task.remaining -= deltaMs;
+      if (task.remaining <= 0) {
+        task.cb();
+        this._scheduledTasks.splice(i, 1);
+      }
+    }
   }
 
   // ─── Sparks ──────────────────────────────────────────────────────────────
@@ -327,6 +372,10 @@ export class ImpactFX {
     const ps = new ParticleSystem(`sparks_${Date.now()}`, profile.sparkCount, this.scene);
     ps.emitter = position.clone();
     ps.particleTexture = this.assetLoader?.getOrFallback("fx_sparks") ?? null;
+    if (!ps.particleTexture) {
+      ps.dispose?.();
+      return;
+    }
 
     const emitter = new SphereParticleEmitter(0.1, 0, 1);
     ps.particleEmitterType = emitter;
@@ -358,7 +407,7 @@ export class ImpactFX {
     ps.start();
 
     // Auto-dispose after longest possible particle life
-    setTimeout(() => ps.dispose?.(), (profile.sparkLife[1] + 0.1) * 1000);
+    this._schedule((profile.sparkLife[1] + 0.1) * 1000, () => ps.dispose?.());
   }
 
   // ─── Shockwave Ring ───────────────────────────────────────────────────────
@@ -410,11 +459,8 @@ export class ImpactFX {
 
     const targetScale = profile.shockwaveScale;
     const duration    = profile.shockwaveFade * 1.15; // slightly longer for dramatic read
-    const startTime   = performance.now();
 
-    const animate = () => {
-      const elapsed = (performance.now() - startTime) / 1000;
-      const t       = Math.min(1, elapsed / duration);
+    this._animate(duration * 1000, (t) => {
       // Fast start, slow finish — classic anime shockwave timing
       const eased   = 1 - Math.pow(1 - t, 3);   // ease-out cubic
 
@@ -425,16 +471,10 @@ export class ImpactFX {
 
       // Sharp alpha falloff in last 40%
       slot.mat.alpha = t < 0.6 ? 0.9 : 0.9 * (1 - ((t - 0.6) / 0.4));
-
-      if (t < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        slot.mesh.isVisible = false;
-        slot.inUse          = false;
-      }
-    };
-
-    requestAnimationFrame(animate);
+    }, () => {
+      slot.mesh.isVisible = false;
+      slot.inUse          = false;
+    });
   }
 
   // ─── Smoke ────────────────────────────────────────────────────────────────
@@ -443,6 +483,10 @@ export class ImpactFX {
     const ps = new ParticleSystem(`smoke_${Date.now()}`, count, this.scene);
     ps.emitter = position.clone();
     ps.particleTexture = this.assetLoader?.getOrFallback("fx_smoke") ?? null;
+    if (!ps.particleTexture) {
+      ps.dispose?.();
+      return;
+    }
 
     ps.color1    = new Color4(0.4, 0.4, 0.4, 0.6);
     ps.color2    = new Color4(0.2, 0.2, 0.2, 0.3);
@@ -463,7 +507,7 @@ export class ImpactFX {
     ps.disposeOnStop = true;
     ps.start();
 
-    setTimeout(() => ps.dispose?.(), 3000);
+    this._schedule(FX_SETTINGS.smokeLifeMs, () => ps.dispose?.());
   }
 
   // ─── Debris ───────────────────────────────────────────────────────────────
@@ -490,7 +534,7 @@ export class ImpactFX {
     ps.disposeOnStop = true;
     ps.start();
 
-    setTimeout(() => ps.dispose?.(), 2500);
+    this._schedule(FX_SETTINGS.debrisLifeMs, () => ps.dispose?.());
   }
 
   // ─── Crater ───────────────────────────────────────────────────────────────
@@ -577,32 +621,10 @@ export class ImpactFX {
 
   // ─── Flash Overlay ────────────────────────────────────────────────────────
 
-  _buildFlashOverlay() {
-    if (document.getElementById("impactFlash")) return;
-    const el = document.createElement("div");
-    el.id = "impactFlash";
-    Object.assign(el.style, {
-      position:   "fixed", inset: "0",
-      opacity:    "0",
-      background: "#fff",
-      pointerEvents: "none",
-      transition: "opacity 0.04s linear",
-      zIndex:     "9997",
-    });
-    document.body.appendChild(el);
-  }
-
   _flashHitOverlay(color, opacity = 0.2) {
-    const el = document.getElementById("impactFlash");
-    if (!el) return;
-    el.style.background = `rgb(${Math.round(color.r*255)},${Math.round(color.g*255)},${Math.round(color.b*255)})`;
-    el.style.opacity    = String(Math.min(1, opacity * 1.3));
-    el.style.transition = "opacity 0.02s linear";
-    // Hold the flash briefly before fading — anime-style impact beat
-    setTimeout(() => {
-      el.style.transition = "opacity 0.16s ease-out";
-      el.style.opacity    = "0";
-    }, 60);
+    if (this.registry && typeof this.registry.requestScreenFlash === "function") {
+      this.registry.requestScreenFlash(color, FX_SETTINGS.flashHoldMs + 160, Math.min(1, opacity * 1.3));
+    }
   }
 
   _spawnFlash(position, color, radius = 1) {
@@ -624,18 +646,15 @@ export class ImpactFX {
     sphere.material      = mat;
     sphere.renderingGroupId = 1;
 
-    const start = performance.now();
     const dur   = 280;    // slightly longer flash for dramatic read
-    const fade  = () => {
-      const t = Math.min(1, (performance.now() - start) / dur);
+    this._animate(dur, (t) => {
       // Quick bright peak then smooth falloff
       const easedAlpha = t < 0.15 ? 0.9 : 0.9 * Math.pow(1 - ((t - 0.15) / 0.85), 2);
       mat.alpha = Math.max(0, easedAlpha);
       sphere.scaling.setAll(1 + t * 2.8);
-      if (t < 1) requestAnimationFrame(fade);
-      else sphere.dispose();
-    };
-    requestAnimationFrame(fade);
+    }, () => {
+      sphere.dispose();
+    });
   }
 
   // ─── Wiring (called by GameLoop) ─────────────────────────────────────────
@@ -643,11 +662,13 @@ export class ImpactFX {
   /**
    * Wire to CombatSystem events.
    * @param {import("../combat/CombatSystem").CombatSystem} combat
+   * @param {import("../core/CharacterRegistry").CharacterRegistry} registry
    */
-  wireCombat(combat) {
+  wireCombat(combat, registry) {
+    this.registry = registry;
     combat.on("onHit", (ev) => {
       const targetState = ev.targetSlot !== undefined
-        ? this.scene.getMeshByName?.(`player_${ev.targetSlot}_mesh`)
+        ? registry.getState(ev.targetSlot)
         : null;
       const pos = targetState?.position ?? new Vector3(0, 1, 0);
 
@@ -667,14 +688,14 @@ export class ImpactFX {
 
     combat.on("onUltimate", (ev) => {
       const ownerSlot = ev.ownerSlot ?? ev.slot;
-      const ownerState = this.scene.getMeshByName?.(`player_${ownerSlot}_mesh`);
+      const ownerState = registry.getState(ownerSlot);
       if (ownerState) this.playUltimateImpact(ownerState.position);
     });
   }
 
   _getImpactBudget(type) {
-    const tierBudget = CONFIG.performance?.impactBudgets?.[this._performanceTier]
-      ?? CONFIG.performance?.impactBudgets?.MED
+    const tierBudget = this.config.performance?.impactBudgets?.[this._performanceTier]
+      ?? this.config.performance?.impactBudgets?.MED
       ?? {};
 
     if (type === "LIGHT") {
@@ -725,7 +746,7 @@ export class ImpactFX {
     this._shockwavePool.forEach(s => s.mesh.dispose());
     this._craters.forEach(c => c.dispose());
     this._craters.length = 0;
-    const flashEl = document.getElementById("impactFlash");
-    if (flashEl) flashEl.remove();
+    this._scheduledTasks = [];
+    this._activeAnimations = [];
   }
 }

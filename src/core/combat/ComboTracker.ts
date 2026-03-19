@@ -1,7 +1,6 @@
 // src/core/combat/ComboTracker.ts
 // Tracks per-slot combo state: hit count, accumulated damage, and activity window.
 
-import { ATTACK_CATALOG } from "./AttackCatalog.js";
 
 export class ComboTracker {
   hits = 0;

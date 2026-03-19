@@ -1,7 +1,6 @@
 import { Engine, Scene, Color4 } from "@babylonjs/core";
 import { AssetLoader } from "./AssetLoader.js";
 import { loadGameData } from "../data/gameData.js";
-// @ts-expect-error Runtime config currently lives in JS.
 import { CONFIG } from "./index.js";
 
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;

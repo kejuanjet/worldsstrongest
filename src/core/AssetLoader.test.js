@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { SceneLoader } from "@babylonjs/core";
 import "@babylonjs/loaders";
-import { buildLoadingProgressSnapshot, getAssetUrlCandidates } from "./assetLoaderHelpers.js";
+import { buildLoadingProgressSnapshot, getAssetUrlCandidates } from "./AssetLoader.js";
 
 describe("AssetLoader helpers", () => {
   it("builds candidate URLs for asset and texture aliases", () => {

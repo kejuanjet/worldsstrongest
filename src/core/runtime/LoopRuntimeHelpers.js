@@ -45,6 +45,7 @@ export function consumeInputEdges(game, slot, input, idleInput) {
     btnUltimate: !!current.btnUltimate && !prev.btnUltimate,
     btnRush: !!current.btnRush && !prev.btnRush,
     btnGrab: !!current.btnGrab && !prev.btnGrab,
+    btnDodge: !!current.btnDodge && !prev.btnDodge,
     btnTransform: !!current.btnTransform && !prev.btnTransform,
     btnTransformDown: !!current.btnTransformDown && !prev.btnTransformDown,
     btnStance: !!current.btnStance && !prev.btnStance,

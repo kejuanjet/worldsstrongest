@@ -23,6 +23,8 @@ export interface InputStateLike {
   btnKi: boolean;
   btnBlock: boolean;
   btnStance: boolean;
+  btnHeal?: boolean;
+  btnMagicAttack?: boolean;
   lockedSlot: SlotId | null;
   mashCount: number;
   yaw?: number;
@@ -36,9 +38,12 @@ export interface AttackInputEdges {
   btnUltimate: boolean;
   btnRush: boolean;
   btnGrab: boolean;
+  btnDodge: boolean;
   btnTransform: boolean;
   btnTransformDown: boolean;
   btnStance: boolean;
   btnKiStart: boolean;
   btnKiEnd: boolean;
+  btnHeal: boolean;
+  btnMagicAttack: boolean;
 }

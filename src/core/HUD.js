@@ -1,4 +1,4 @@
-import { AdvancedDynamicTexture } from "@babylonjs/gui";
+import { AdvancedDynamicTexture, Rectangle } from "@babylonjs/gui";
 import { CONFIG } from "../config/index.js";
 import { PlayerPanelUI } from "./hud/PlayerPanelUI.js";
 import { CombatFeedUI } from "./hud/CombatFeedUI.js";
@@ -9,8 +9,8 @@ import { advanceHudUpdateAccumulator, getHudUpdateStep } from "./hud/hudUpdateSc
 export class HUD {
   /**
    * @param {import("@babylonjs/core").Scene} scene
-   * @param {import("../character/CharacterRegistry").CharacterRegistry} registry
-   * @param {import("../network/SessionManager").SessionManager} sessionManager
+   * @param {import("./CharacterRegistry").CharacterRegistry} registry
+   * @param {import("./SessionManager").SessionManager} sessionManager
    */
   constructor(scene, registry, sessionManager) {
     this.scene = scene;
@@ -19,6 +19,9 @@ export class HUD {
     this._inputManager = null;
     this._localSlot = 0;
     this._hudUpdateAccumulator = 0;
+
+    this._flashAlpha = 0;
+    this._flashDecayRate = 0;
 
     this.ui = AdvancedDynamicTexture.CreateFullscreenUI("HUD", true, scene);
     this.ui.renderScale = 1;
@@ -51,6 +54,19 @@ export class HUD {
     this.combatFeed.build();
     this.missionUi.build();
     this.worldInfo.build();
+    this._buildFlashOverlay();
+  }
+
+  _buildFlashOverlay() {
+    this.flashRect = new Rectangle("screenFlashOverlay");
+    this.flashRect.width = "100%";
+    this.flashRect.height = "100%";
+    this.flashRect.background = "white";
+    this.flashRect.alpha = 0;
+    this.flashRect.isHitTestVisible = false;
+    this.flashRect.zIndex = -10; // Behind UI panels but over the 3D scene
+    this.flashRect.thickness = 0;
+    this.ui.addControl(this.flashRect);
   }
 
   update(delta) {
@@ -70,6 +86,15 @@ export class HUD {
     this.worldInfo.update(delta, {
       shouldRunHeavyUi: cadence.shouldRunHeavyUi,
     });
+
+    // Smooth frame-synced decay for the screen flash
+    if (this._flashAlpha > 0) {
+      this._flashAlpha -= this._flashDecayRate * delta;
+      if (this._flashAlpha <= 0) {
+        this._flashAlpha = 0;
+      }
+      if (this.flashRect) this.flashRect.alpha = this._flashAlpha;
+    }
   }
 
   setLocalSlot(slot) {
@@ -154,6 +179,17 @@ export class HUD {
     this.combatFeed.spawnDamageNumber(worldPos, damage, impactType);
   }
 
+  _triggerFlash(color, durationMs, maxOpacity) {
+    if (!this.flashRect) return;
+    const r = Math.round(color.r * 255);
+    const g = Math.round(color.g * 255);
+    const b = Math.round(color.b * 255);
+    this.flashRect.background = `rgb(${r},${g},${b})`;
+    this._flashAlpha = maxOpacity;
+    this.flashRect.alpha = this._flashAlpha;
+    this._flashDecayRate = maxOpacity / (durationMs / 1000); // Compute alpha decay per second
+  }
+
   _wireEvents() {
     this.registry.on("onTransformChanged", (payload) => {
       const slot = payload?.slot;
@@ -165,6 +201,10 @@ export class HUD {
 
     this.registry.on("onPlayerDied", ({ slot }) => {
       this.playerPanels.handlePlayerDied(slot);
+    });
+
+    this.registry.on("onScreenFlashRequested", (payload) => {
+      this._triggerFlash(payload.color, payload.durationMs, payload.opacity);
     });
   }
 

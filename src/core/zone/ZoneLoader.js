@@ -18,7 +18,7 @@ export async function loadZoneGeometry(scene, def) {
   try {
     if (!def.modelPath) throw new Error("No modelPath provided");
     
-    const resolvedModelPath = await resolveAssetUrl(def.modelPath);
+    const _resolvedModelPath = await resolveAssetUrl(def.modelPath);
     const importSource = await resolveSceneSource(def.modelPath);
 
     const result = await SceneLoader.ImportMeshAsync(

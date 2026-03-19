@@ -1,4 +1,3 @@
-// src/network/SessionManager.js
 // Manages the 4-player session: host/join, state sync, player messaging.
 // Transport layer uses WebSocket (with a simple signaling fallback for LAN via BroadcastChannel).
 // The host is authoritative — clients send inputs, host sends back world state.
@@ -30,6 +29,45 @@ export const MSG_TYPE = {
 const SNAPSHOT_INTERVAL_MS  = 50;    // 20Hz world state sync
 const PING_INTERVAL_MS      = 2000;  // heartbeat / latency check
 const MAX_PLAYERS           = 4;
+
+// ─── Message Validation ─────────────────────────────────────────────────────
+
+const VALID_MSG_TYPES = new Set(Object.values(MSG_TYPE));
+
+/**
+ * Validate an incoming network message has the required shape.
+ * Returns null if valid, or an error string describing the problem.
+ * @param {unknown} msg
+ * @returns {string | null}
+ */
+function validateMessage(msg) {
+  if (msg == null || typeof msg !== "object") return "message is not an object";
+  if (!msg.type || typeof msg.type !== "string") return "missing or invalid 'type' field";
+  if (!VALID_MSG_TYPES.has(msg.type)) return `unknown message type: ${msg.type}`;
+
+  // Type-specific field checks
+  switch (msg.type) {
+    case MSG_TYPE.PLAYER_JOINED:
+      if (typeof msg.playerId !== "string" || msg.playerId.length === 0) return "PLAYER_JOINED: missing playerId";
+      break;
+    case MSG_TYPE.INPUT_STATE:
+      if (typeof msg.playerId !== "string") return "INPUT_STATE: missing playerId";
+      if (msg.slot == null || typeof msg.slot !== "number") return "INPUT_STATE: missing or invalid slot";
+      if (msg.input == null || typeof msg.input !== "object") return "INPUT_STATE: missing input object";
+      break;
+    case MSG_TYPE.REQUEST_TRANSFORM:
+      if (typeof msg.playerId !== "string") return "REQUEST_TRANSFORM: missing playerId";
+      if (typeof msg.transformId !== "string") return "REQUEST_TRANSFORM: missing transformId";
+      break;
+    case MSG_TYPE.REQUEST_ATTACK:
+      if (typeof msg.playerId !== "string") return "REQUEST_ATTACK: missing playerId";
+      break;
+    case MSG_TYPE.PING:
+      if (typeof msg.ts !== "number") return "PING: missing timestamp";
+      break;
+  }
+  return null;
+}
 
 // ─── SessionManager ───────────────────────────────────────────────────────────
 
@@ -224,7 +262,13 @@ export class SessionManager {
         resolve();
       };
 
-      ws.onmessage = (ev) => this._handleHostMessage(JSON.parse(ev.data));
+      ws.onmessage = (ev) => {
+          let msg;
+          try { msg = JSON.parse(ev.data); } catch { console.warn("[SessionManager] Malformed JSON from host"); return; }
+          const err = validateMessage(msg);
+          if (err) { console.warn(`[SessionManager] Invalid message from host: ${err}`); return; }
+          this._handleHostMessage(msg);
+        };
 
       ws.onclose = () => {
         this.connected = false;
@@ -337,7 +381,13 @@ export class SessionManager {
 
       ws.on("message", (raw) => {
         let msg;
-        try { msg = JSON.parse(raw.toString()); } catch (e) { console.warn("[SessionManager] Malformed message from client:", e); return; }
+        try { msg = JSON.parse(raw.toString()); } catch (e) { console.warn("[SessionManager] Malformed JSON from client:", e); return; }
+
+        const validationError = validateMessage(msg);
+        if (validationError) {
+          console.warn(`[SessionManager] Invalid message from client: ${validationError}`);
+          return;
+        }
 
         if (msg.type === MSG_TYPE.PLAYER_JOINED && !clientPlayerId) {
           clientPlayerId = msg.playerId;

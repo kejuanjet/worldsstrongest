@@ -3,11 +3,15 @@
 // knockback physics, and landing. Runs on both host (authoritative) and
 // client (predictive). Results are reconciled via snapshot.
 
-// @ts-ignore - JavaScript module without type declarations
 import { CONFIG } from "../config/index.js";
 import { Vector3, Scalar, Ray, type Scene } from "@babylonjs/core";
+import { Logger } from "./Logger.js";
+
+const log = Logger.scoped("Movement");
 
 // ─── Type Definitions ─────────────────────────────────────────────────────────
+
+import type { MovementState } from "./types/CharacterViews";
 
 /** Input snapshot for movement processing */
 export interface InputSnapshot {
@@ -28,37 +32,10 @@ export interface InputSnapshot {
   mashCount?: number;
 }
 
-/** Interface for character state exposed to MovementController */
-export interface MovementCharacterState {
-  slot: number;
-  position: Vector3;
-  velocity: Vector3;
-  isGrounded: boolean;
-  isFlying: boolean;
-  isDead: boolean;
-  isInvincible?: boolean;
-  ki: number;
-  stamina: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  characterDef?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  currentTransform?: any;
-  rootNode?: {
-    position: Vector3;
-    rotation: { y: number };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getChildMeshes?: (directDescendantsOnly?: boolean) => any[];
-  };
-  lastSafePosition?: Vector3;
-  spawnPosition?: Vector3;
-  lastMoveInput?: Vector3;
-  lastDodgeTime?: number;
-}
-
 /** Interface for the character registry dependency */
 export interface CharacterRegistryLike {
-  slots: Map<number, MovementCharacterState>;
-  getState(slot: number): MovementCharacterState | undefined;
+  slots: Map<number, MovementState>;
+  getState(slot: number): MovementState | null | undefined;
 }
 
 // ─── Movement State (per slot) ────────────────────────────────────────────────
@@ -124,7 +101,7 @@ export class MovementController {
    * @param input - Input manager for live input
    * @param localSlot - Slot to read live input for; others use queued input
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   update(step: number, input: any, localSlot: number | null): void {
     for (const [slot, state] of this.registry.slots) {
       if (state.isDead) continue;
@@ -168,7 +145,7 @@ export class MovementController {
    * @param slotOrState - Slot number or character state object
    * @returns The ground Y level
    */
-  snapStateToGround(slotOrState: number | MovementCharacterState): number {
+  snapStateToGround(slotOrState: number | MovementState): number {
     const state = typeof slotOrState === "number"
       ? this.registry.getState(slotOrState)
       : slotOrState;
@@ -218,7 +195,7 @@ export class MovementController {
 
   private _simulate(
     slot: number,
-    charState: MovementCharacterState,
+    charState: MovementState,
     mv: MoveState,
     input: InputSnapshot,
     step: number
@@ -227,9 +204,8 @@ export class MovementController {
     this._tickTimers(mv, step);
 
     // 2. Decide movement intent
-    const wishDir = new Vector3(input.moveX ?? 0, input.flyY ?? 0, input.moveZ ?? 0);
-    const isMoving = wishDir.lengthSquared() > 0.01;
-    charState.lastMoveInput?.copyFromFloats(input.moveX ?? 0, input.flyY ?? 0, input.moveZ ?? 0);
+    const wishDir = new Vector3(input.moveX, input.flyY, input.moveZ);
+    charState.lastMoveInput?.copyFromFloats(input.moveX, input.flyY, input.moveZ);
 
     // 3. Flight toggle
     this._handleFlight(charState, mv, input, step);
@@ -279,7 +255,7 @@ export class MovementController {
   /** Physics-only pass for remote slots on client (no input, just extrapolate) */
   private _simulatePhysicsOnly(
     slot: number,
-    charState: MovementCharacterState,
+    charState: MovementState,
     mv: MoveState,
     step: number
   ): void {
@@ -294,13 +270,13 @@ export class MovementController {
   // ─── Flight ──────────────────────────────────────────────────────────────
 
   private _handleFlight(
-    charState: MovementCharacterState,
+    charState: MovementState,
     mv: MoveState,
     input: InputSnapshot,
     step = 0.016
   ): void {
-    const flyPressed = (input.flyY ?? 0) > 0.1;
-    const flyDown = (input.flyY ?? 0) < -0.1;
+    const flyPressed = input.flyY > 0.1;
+    const flyDown = input.flyY < -0.1;
 
     // Reset trigger when button released so next press activates
     if (!flyPressed) {
@@ -344,7 +320,7 @@ export class MovementController {
   // ─── Ground Movement ─────────────────────────────────────────────────────
 
   private _updateGroundMovement(
-    charState: MovementCharacterState,
+    charState: MovementState,
     mv: MoveState,
     wishDir: Vector3,
     step: number
@@ -377,7 +353,7 @@ export class MovementController {
   // ─── Flight Movement ─────────────────────────────────────────────────────
 
   private _updateFlight(
-    charState: MovementCharacterState,
+    charState: MovementState,
     mv: MoveState,
     wishDir: Vector3,
     step: number
@@ -413,7 +389,7 @@ export class MovementController {
   // ─── Dodge ───────────────────────────────────────────────────────────────
 
   private _startDodge(
-    charState: MovementCharacterState,
+    charState: MovementState,
     mv: MoveState,
     wishDir: Vector3
   ): void {
@@ -444,7 +420,7 @@ export class MovementController {
     mv.invincibilityTimer = CONFIG.movement.dodgeInvincibilityMs / 1000;
   }
 
-  private _updateDodge(mv: MoveState, step: number): void {
+  private _updateDodge(mv: MoveState, _step: number): void {
     // Maintain dodge velocity with light decay
     mv.velocity = mv.dodgeDirection.scale(
       CONFIG.movement.dodgeSpeed * Math.max(0, mv.dodgeTimer / CONFIG.movement.dodgeDuration)
@@ -483,7 +459,7 @@ export class MovementController {
     mv.velocity.y = Math.max(mv.velocity.y, CONFIG.movement.terminalVelocity);
   }
 
-  private _resolveGround(charState: MovementCharacterState, mv: MoveState): void {
+  private _resolveGround(charState: MovementState, mv: MoveState): void {
     if (!this._isFiniteVector3(charState.position)) {
       this._recoverToSafePosition(charState, mv, "non-finite world position");
       return;
@@ -533,7 +509,7 @@ export class MovementController {
 
   // ─── Character Orientation ───────────────────────────────────────────────
 
-  private _orientToVelocity(charState: MovementCharacterState, mv: MoveState, step: number): void {
+  private _orientToVelocity(charState: MovementState, mv: MoveState, step: number): void {
     const flat = new Vector3(mv.velocity.x, 0, mv.velocity.z);
     if (flat.lengthSquared() < 0.5) return;   // don't rotate when barely moving
 
@@ -565,7 +541,7 @@ export class MovementController {
       mv.invincibilityTimer -= step;
       if (mv.invincibilityTimer <= 0) {
         mv.invincibilityTimer = 0;
-        const charState = this.registry.getState(mv._slot ?? -1);
+        const charState = this.registry.getState(mv._slot);
         if (charState) charState.isInvincible = false;
       }
     }
@@ -577,7 +553,7 @@ export class MovementController {
 
   // ─── Live Input Reader ───────────────────────────────────────────────────
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private _readLiveInput(input: any): InputSnapshot {
     const move = input.getMovementVector?.() ?? Vector3.Zero();
     return {
@@ -599,9 +575,9 @@ export class MovementController {
     };
   }
 
-  private _getForwardDirection(charState: MovementCharacterState): Vector3 {
+  private _getForwardDirection(charState: MovementState): Vector3 {
     if (!charState.rootNode) return new Vector3(0, 0, 1);
-    const yaw = charState.rootNode.rotation?.y ?? 0;
+    const yaw = charState.rootNode.rotation.y;
     return new Vector3(Math.sin(yaw), 0, Math.cos(yaw)).normalize();
   }
 
@@ -617,14 +593,13 @@ export class MovementController {
   }
 
   private _isFiniteVector3(vec: Vector3): boolean {
-    return !!vec
-      && Number.isFinite(vec.x)
+    return Number.isFinite(vec.x)
       && Number.isFinite(vec.y)
       && Number.isFinite(vec.z);
   }
 
   private _recoverToSafePosition(
-    charState: MovementCharacterState,
+    charState: MovementState,
     mv: MoveState,
     reason = "invalid movement state"
   ): void {
@@ -654,6 +629,6 @@ export class MovementController {
     if (charState.lastSafePosition?.copyFrom) {
       charState.lastSafePosition.copyFrom(charState.position);
     }
-    console.warn(`[MovementController] Recovered slot ${charState.slot} from ${reason}.`);
+    log.warn(`Recovered slot ${charState.slot} from ${reason}.`);
   }
 }

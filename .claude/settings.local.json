@@ -13,7 +13,19 @@
       "Bash(grep -r \"MIXAMO_PREFIXES\\\\|_collectRetargetClipNames\\\\|_unlockThen\" 'c:\\\\Users\\\\aubre\\\\OneDrive\\\\Documents\\\\WORLDS STRONGEST\\\\src' --include=*.ts --include=*.js)",
       "Bash(find 'c:/Users/aubre/OneDrive/Documents/WORLDS STRONGEST/src' -type f -name *.js)",
       "Bash(npx vitest:*)",
-      "Bash(find 'C:/Users/aubre/OneDrive/Documents/WORLDS STRONGEST' -type f \\\\\\(-path */src/ai/* -o -path */src/combat/* -o -path */src/character/* -o -path */src/network/* -o -path */src/ui/* -o -path */src/world/* -o -path */src/progression/* -o -path */src/save/* -o -path */src/missions/* -o -path */src/data/* -o -path */src/config/* \\\\\\))"
+      "Bash(find 'C:/Users/aubre/OneDrive/Documents/WORLDS STRONGEST' -type f \\\\\\(-path */src/ai/* -o -path */src/combat/* -o -path */src/character/* -o -path */src/network/* -o -path */src/ui/* -o -path */src/world/* -o -path */src/progression/* -o -path */src/save/* -o -path */src/missions/* -o -path */src/data/* -o -path */src/config/* \\\\\\))",
+      "Bash(grep -r from.*EnemyAIController '/c/Users/aubre/OneDrive/Documents/WORLDS STRONGEST/src')",
+      "Bash(grep -r 'export { .* } from' '/c/Users/aubre/OneDrive/Documents/WORLDS STRONGEST/src' --include=*.ts --include=*.js)",
+      "Bash(grep -r \"import.*from.*['''']\\\\.\\\\/combat/CombatSystem\\\\|import.*from.*['''']\\\\.\\\\/ui/HUD\\\\|import.*from.*['''']\\\\.\\\\/world/ZoneManager\" '/c/Users/aubre/OneDrive/Documents/WORLDS STRONGEST' --include=*.ts --include=*.js)",
+      "Bash(grep -r \"from.*CharacterRegistry\\\\|from.*GameLoop\\\\|from.*CombatSystem\" '/c/Users/aubre/OneDrive/Documents/WORLDS STRONGEST/src' --include=*.ts --include=*.js)",
+      "Bash(grep -r \"from.*core/index\\\\|from.*\\\\./index\" '/c/Users/aubre/OneDrive/Documents/WORLDS STRONGEST/src' --include=*.ts --include=*.js)",
+      "Bash(grep -E \"\\\\.ts$|\\\\.js$\")",
+      "Bash(wc -l src/core/*.js src/core/*.ts)",
+      "Bash(find src:*)",
+      "Bash(ls -la src/core/*.js src/core/*.ts)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\aubre\\OneDrive\\Documents\\WORLDS STRONGEST\\src\\core"
     ]
   }
 }

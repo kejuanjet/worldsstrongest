@@ -15,6 +15,10 @@ import {
   buildAnimationNameMap,
   type StanceType,
 } from "./AnimationData.js";
+import {
+  normalizeTargetName,
+  toTargetPropertyPath,
+} from "../utils/animationUtils.js";
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
@@ -61,24 +65,7 @@ export interface AnimatorRuntimeSnapshot {
   oneShotTimer: number;
 }
 
-function toTargetPropertyPath(rawPath: unknown): string[] {
-  if (Array.isArray(rawPath)) return rawPath.map((part) => String(part));
-  if (typeof rawPath !== "string") return [];
-  return rawPath
-    .split(".")
-    .map((part) => part.trim())
-    .filter(Boolean);
-}
 
-function normalizeTargetName(raw: string | null | undefined): string {
-  if (!raw) return "";
-  let value = String(raw).trim();
-  const pipeIdx = value.lastIndexOf("|");
-  if (pipeIdx >= 0) value = value.slice(pipeIdx + 1);
-  const colonIdx = value.lastIndexOf(":");
-  if (colonIdx >= 0) value = value.slice(colonIdx + 1);
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
-}
 
 function isRootLikeTarget(target: Record<string, unknown> | null | undefined): boolean {
   if (!target) return false;

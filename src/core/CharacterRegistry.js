@@ -1,4 +1,3 @@
-// src/character/CharacterRegistry.js
 // Authoritative registry for all four player slots.
 // Handles spawn, despawn, power level, transformation state, and per-frame updates.
 
@@ -9,13 +8,10 @@ import {
   Color3,
   Color4,
   TransformNode,
-  PhysicsImpostor,
-  Quaternion,
-  ParticleSystem,
   SceneLoader,
 } from "@babylonjs/core";
 import { getEnemyDef } from "../ai/EnemyRegistry.js";
-import { ASSET_MANIFEST, assetExists, resolveAssetUrl, resolveSceneSource } from "./AssetLoader.js";
+import { ASSET_MANIFEST, resolveAssetUrl, resolveSceneSource } from "./AssetLoader.js";
 import { CONFIG } from "./index.js";
 
 const CHARACTER_MIN_HEIGHT_M = 1.6256; // 5'4"
@@ -333,8 +329,9 @@ class PlayerState {
 
 // ─── CharacterRegistry ────────────────────────────────────────────────────────
 export class CharacterRegistry {
-  constructor(scene) {
+  constructor(scene, config = CONFIG) {
     this.scene = scene;
+    this.config = config;
     /** @type {Map<number, PlayerState>} slot → state */
     this.slots = new Map();
     /** @type {Map<string, number>} playerId → slot */
@@ -357,7 +354,7 @@ export class CharacterRegistry {
     // HP regeneration rate per second (base, very slow)
     this.hpRegenRate = 5.0;
     // Stamina regeneration rate per second
-    this.staminaRegenRate = CONFIG.characters.staminaRegen;
+    this.staminaRegenRate = this.config.characters?.staminaRegen ?? 15;
 
     // Listen for VFX-driven requests to swap meshes/materials (best-effort).
     try {
@@ -613,7 +610,7 @@ export class CharacterRegistry {
 
     // ── Z-Vanish Perfect Dodge Check ──
     const now = performance.now();
-    if (state.lastDodgeTime && (now - state.lastDodgeTime) < (CONFIG.combat.perfectDodgeWindowMs || 150)) {
+    if (state.lastDodgeTime && (now - state.lastDodgeTime) < (this.config.combat?.perfectDodgeWindowMs || 150)) {
       const attackerState = sourcePlayerId ? this.getStateByPlayerId(sourcePlayerId) : null;
       if (attackerState) {
         // Teleport behind attacker
@@ -774,7 +771,7 @@ export class CharacterRegistry {
 
       // Gain ki while charging (player is powering up)
       if (state.isChargingKi) {
-        state.ki = Math.min(state.maxKi, state.ki + CONFIG.combat.kiChargeRate * delta);
+        state.ki = Math.min(state.maxKi, state.ki + (this.config.combat?.kiChargeRate ?? 20) * delta);
       }
 
       // Sync mesh position (in a full impl, physics drives this — this is a fallback)
@@ -1296,7 +1293,7 @@ export class CharacterRegistry {
 
     let weapResult;
     try {
-      const resolvedWeaponPath = await resolveAssetUrl(weapDef.path);
+      const _resolvedWeaponPath = await resolveAssetUrl(weapDef.path);
       const importSource = await resolveSceneSource(weapDef.path);
       weapResult = await SceneLoader.ImportMeshAsync("", importSource.rootUrl, importSource.sceneFilename, this.scene);
     } catch (err) {

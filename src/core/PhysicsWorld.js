@@ -1,7 +1,6 @@
 import { Vector3 } from "@babylonjs/core";
 import { PhysicsBodyRegistry } from "./physics/PhysicsBodyRegistry.js";
 import { initPhysicsEngine } from "./physics/PhysicsEngineAdapter.js";
-import { COLLISION_LAYER, COLLISION_MASK } from "./physics/PhysicsLayers.js";
 import { PhysicsQueries } from "./physics/PhysicsQueries.js";
 import { PhysicsTriggerObserver } from "./physics/PhysicsTriggerObserver.js";
 
